@@ -1,0 +1,85 @@
+BODY, A, TD, INPUT, SELECT {
+	FONT-FAMILY: Tahoma, Arial, Helvetica, sans-serif;
+	FONT-SIZE: 10pt;
+}
+
+BODY	{
+	background-color : #EFEFEF;
+	margin-top: 10px;
+	margin-left: 100px;
+	margin-right: 100px;
+	margin-bottom: 10px;
+}
+
+A	{
+	COLOR: #9C0000;
+	text-decoration: none;
+}
+
+INPUT, TEXTAREA, SELECT	{
+	background: transparent;
+	border: solid 1px silver;
+}
+
+SELECT	{
+	background-color : EAEAEA;
+}
+
+H1 {
+	font-size: 16px;
+	margin: 24px 0px 16px 0px;
+}
+
+H2 {
+	font-size: 14px;
+	margin: 16px 0px 8px 0px;
+}
+
+H3 {
+	font-size: 12px;
+	margin: 12px 0px 4px 0px;
+}
+
+.StringActive	{
+	text-decoration: none;
+}
+
+.StringInActive	{
+	color: #AEAEAE; text-decoration: none;
+}
+
+.Tab {
+	display: none;
+}
+
+.TabActive {
+	display: block;
+
+	width: 520px;
+	height: 300px;
+}
+
+.TabActive td {
+	padding: 3px 0px 3px 0px;
+	vertical-align: top;
+}
+
+.TabActive .Key {
+	width: 150px;
+}
+
+.TabActive .Value {
+	width: 170px;
+}
+
+.TabActive .Error {
+	width: 200px;
+	font-size: 8pt;
+	color: red;
+}
+
+.Note {
+	font-size: 8pt;
+	margin: 0px;
+	height: 26px;
+}
