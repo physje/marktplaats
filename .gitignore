@@ -1,0 +1,5 @@
+#RSS-files
+RSS/*
+
+De PHP-gegenereerde error-logs
+*/error_log
