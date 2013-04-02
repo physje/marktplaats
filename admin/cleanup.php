@@ -1,6 +1,6 @@
 <?php
 //*********************************************************************
-// Marktplaats Checker (c) 2006-2008 Matthijs Draijer
+// Marktplaats Checker (c) 2006-2013 Matthijs Draijer
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

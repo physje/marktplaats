@@ -1,6 +1,6 @@
 <?php
 //*********************************************************************
-// Marktplaats Checker (c) 2006-2008 Matthijs Draijer
+// Marktplaats Checker (c) 2006-2013 Matthijs Draijer
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ echo "<!--     Deze pagina is onderdeel van $ScriptTitle $Version gemaakt door M
 	<table>
 	<tr>
 		<td>
-<?
+<?php
 if(!$publicPage && is_dir ('../install')) {
 	echo "<font class='error'>Helaas, de install-directory bestaat nog.</font>";
 	include ('inc_footer.php');

@@ -1,6 +1,6 @@
 <?php
 //*********************************************************************
-// Marktplaats Checker (c) 2006-2008 Matthijs Draijer
+// Marktplaats Checker (c) 2006-2013 Matthijs Draijer
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -379,7 +379,7 @@ function makeURL($q, $ts, $g, $u, $pmin, $pmax, $np, $loc_type, $postcode, $dist
 function getMarktplaatsData_v3($string) { 
 	$url					= getString('<span data-url="', '?', $string, 0);
 		 
-	$title				= getString('"thumb-placeholder juiceless-link" title="', '" style="background-image', $url[1], 0); 
+	$title				= getString('"thumb-placeholder juiceless-link" title="', '"', $url[1], 0); 
 	$beschrijving	= getString('<span class="mp-listing-description wrapped">', '</span>', $title[1], 0); 
 	$prijs				= getString('<span class="price">', '</span>', $beschrijving[1], 0); 
 	$datum				= getString('<td class="column-date">', '</td>', $prijs[1], 0);
