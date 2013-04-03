@@ -1,5 +1,9 @@
-#RSS-files
-RSS/*
+# RSS-files
+RSS/**
 
-De PHP-gegenereerde error-logs
+# install-dir
+_install/**
+
+# Door PHP-gegenereerde error-logs
+error_log
 */error_log
