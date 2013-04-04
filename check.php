@@ -154,7 +154,7 @@ if($Checken) {
 				
 				if($array[$i] != "") {                        
 					$data			= getMarktplaatsData_v3($array[$i]);
-					
+						
 					if($debug == 1) {
 						foreach($data as $key => $value) {
 							echo "$key -> $value<br>\n\n";

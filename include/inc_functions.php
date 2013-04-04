@@ -405,7 +405,7 @@ function getMarktplaatsData_v3($string) {
 	$gallery	= getString('data-images-l="', '"', $data, 0); 
 	$thumbs		= explode("&", $gallery[0]); 
 	
-	if(count($thumbs) > 0) {
+	if($thumbs[0] != '') {
 		foreach($thumbs as $thumb) {
 			$picture[] = str_replace ("_84.JPG", "_82.JPG", $thumb); 
 		}
