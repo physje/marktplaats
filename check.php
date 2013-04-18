@@ -50,6 +50,13 @@ if($Checken) {
 		if($URL == '') {
 			$URL = getURL($term);
 		}
+		
+		$URLelementen = parse_url($URL);
+		$ZoekElementen = proper_parse_str($URLelementen['query']);
+
+		if(!array_key_exists('postcode', $ZoekElementen)) {
+			$URL = $URL.'&postcode='.$UserData['postcode'];
+		}
 				
 		$inhoud		= file_get_contents($URL);
 				
