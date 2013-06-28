@@ -145,6 +145,17 @@ function getURL($id) {
 	return $URL;
 }
 
+function addPCtoURL($URL, $postcode) {
+	$URLelementen = parse_url($URL);
+	$ZoekElementen = proper_parse_str($URLelementen['query']);
+	
+	if(!array_key_exists('postcode', $ZoekElementen)) {
+		$URL = $URL.'&postcode='.$UserData['postcode'];
+	}
+	
+	return $URL;
+}
+
 function makeURL($q, $ts, $g, $u, $pmin, $pmax, $np, $loc_type, $postcode, $distance, $pv, $pp, $f, $or, $not) {
 	$URL = "http://www.marktplaats.nl/z.html?";
 	//query=HTC+Desire+-Z&categoryId=1685&postcode=2012&distance=15000

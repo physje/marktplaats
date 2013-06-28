@@ -26,7 +26,8 @@ echo "<table>";
 
 foreach($Termen as $term) {
 	$ZoekData	= getZoekData($term);
-	$String		= getZoekString($term);
+	$UserData = getUserData($ZoekData['user']);
+	$String		= getZoekString($term);	
 	//$String		= $ZoekData['q'];
 	$RSSkey		= $ZoekData['key'];
 	$aan			= isActive($term);
@@ -45,7 +46,7 @@ foreach($Termen as $term) {
 	//echo "	<td>$old</td>\n";
 	echo "	<td>&nbsp;</td>\n";
 	//echo "	<td><a href='$url' target='new'>$strCheckResults</a></td>\n";
-	echo "	<td><a href='". $ZoekData['URL'] ."' target='new'><img src='../images/magnifying.jpg' border='0' height=16></a></td>\n";	
+	echo "	<td><a href='". addPCtoURL($ZoekData['URL'], $UserData['postcode']) ."' target='new'><img src='../images/magnifying.jpg' border='0' height=16></a></td>\n";	
 	echo "	<td>&nbsp;</td>\n";
 	echo "	<td><a href='../check.php?forcedID=$term'><img src='../images/refresh.png' border='0' height=16></a></td>\n";
 	echo "	<td>&nbsp;</td>\n";

@@ -51,12 +51,7 @@ if($Checken) {
 			$URL = getURL($term);
 		}
 		
-		$URLelementen = parse_url($URL);
-		$ZoekElementen = proper_parse_str($URLelementen['query']);
-
-		if(!array_key_exists('postcode', $ZoekElementen)) {
-			$URL = $URL.'&postcode='.$UserData['postcode'];
-		}
+		$URL = addPCtoURL($URL, $UserData['postcode']);
 				
 		$inhoud		= file_get_contents($URL);
 				
@@ -102,7 +97,7 @@ if($Checken) {
 		}
 		
 		//$reclame = "Door een bug in het script is marktplaats.nl enige tijd niet gecheckt.... probleem is nu verholpen.";
-		$reclame = "De layout van marktplaats.nl is gewijzigd, het script en de zoektermen moesten daarvoor op de schop.<br>Controleer daarom of de zoekopdracht nog de juiste resultaten geeft en pas hem zonodig aan.";
+		//$reclame = "De layout van marktplaats.nl is gewijzigd, het script en de zoektermen moesten daarvoor op de schop.<br>Controleer daarom of de zoekopdracht nog de juiste resultaten geeft en pas hem zonodig aan.";
 		$extraWitregel = false;
 		
 		if(($rss == 0 OR $rss == 2) AND $reclame != '') {
