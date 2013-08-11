@@ -150,7 +150,7 @@ function addPCtoURL($URL, $postcode) {
 	$ZoekElementen = proper_parse_str($URLelementen['query']);
 	
 	if(!array_key_exists('postcode', $ZoekElementen)) {
-		$URL = $URL.'&postcode='.$UserData['postcode'];
+		$URL = $URL.'&postcode='.$postcode;
 	}
 	
 	return $URL;
@@ -626,20 +626,46 @@ function convertDate($date) {
 	$datumDelen = explode(' ', $delen[0]);
 	$tijdDelen = explode(':', $delen[1]);
 	
-	$datumDelen[1] = str_ireplace('jan.', 01, $datumDelen[1]);
-	$datumDelen[1] = str_ireplace('feb.', 02, $datumDelen[1]);
-	$datumDelen[1] = str_ireplace('mrt.', 03, $datumDelen[1]);
-	$datumDelen[1] = str_ireplace('apr.', 04, $datumDelen[1]);
-	$datumDelen[1] = str_ireplace('mei',  05, $datumDelen[1]);
-	$datumDelen[1] = str_ireplace('jun.', 06, $datumDelen[1]);
-	$datumDelen[1] = str_ireplace('jul.', 07, $datumDelen[1]);
-	$datumDelen[1] = str_ireplace('aug.', 08, $datumDelen[1]);
-	$datumDelen[1] = str_ireplace('sep.', 09, $datumDelen[1]);
-	$datumDelen[1] = str_ireplace('okt.', 10, $datumDelen[1]);
-	$datumDelen[1] = str_ireplace('nov.', 11, $datumDelen[1]);
-	$datumDelen[1] = str_ireplace('dec.', 12, $datumDelen[1]);
-	
-	return mktime($tijdDelen[0], $tijdDelen[1], 0, $datumDelen[1], $datumDelen[0], '20'. substr($datumDelen[2], -2));
+	switch ($datumDelen[1]) {
+		case 'jan.':
+			$maand = 1;
+			break;
+		case 'feb.':
+			$maand = 2;
+			break;
+		case 'mrt.':
+			$maand = 3;
+			break;
+		case 'apr.':
+			$maand = 4;
+			break;
+		case 'mei':
+			$maand = 5;
+			break;
+		case 'jun.':
+			$maand = 6;
+			break;
+		case 'jul.':
+			$maand = 7;
+			break;
+		case 'aug.':
+			$maand = 8;
+			break;
+		case 'sep.':
+			$maand = 9;
+			break;
+		case 'okt.':
+			$maand = 10;
+			break;
+		case 'nov.':
+			$maand = 11;
+			break;
+		case 'dec.':
+			$maand = 12;
+			break;
+	}
+		
+	return mktime($tijdDelen[0], $tijdDelen[1], 0, $maand, $datumDelen[0], '20'. substr($datumDelen[2], -2));
 }
 
 function getMaand($maand) {
