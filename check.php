@@ -54,7 +54,7 @@ if($Checken) {
 		$URL = addPCtoURL($URL, $UserData['postcode']);
 				
 		$inhoud		= file_get_contents($URL);
-				
+		
 		//echo "RSS : $rss|";
 		
 		if(strpos($inhoud, '<table class="search-results-table">')) {
@@ -75,7 +75,7 @@ if($Checken) {
 		
 		$string	= getString($beginString, $eindString, $inhoud, 0);
 		
-		$array		= explode('<tr class="search-result group', $string[0]);
+		$array		= explode('<tr class="search-result defaultSnippet group-', $string[0]);
 		$aantal		= count($array);
 			
 		$teller_n		= 0;
@@ -144,7 +144,7 @@ if($Checken) {
 			if($maximum > 10) {
 				$maximum = 3;
 			}
-		}		
+		}
 		
 		for($i=1 ; $i <= $maximum ; $i++) {			
 			// Event. reclame buiten de deur houden
