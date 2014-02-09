@@ -505,22 +505,22 @@ function AddUpdateData($data, $term) {
 	$changed = changedItem($data, $term);	
 	$NewItem = NewItem($data, $term);
 	
-	//echo $data['title'];
+	echo $data['title'];
 	
 	if(!$NewItem AND $changed) {
-		// UPDATE titel		
+		# UPDATE titel		
 		changeData($data, $term);
 		//echo ' -> update titel';
 	} elseif ($NewItem) {
-		// INVOEREN
+		# INVOEREN
 		AddData($data, $term);
 		//echo ' -> toevoegen !<br>';
 	} else {
-		// UPDATE tijd
+		# UPDATE tijd
 		UpdateData($data['id'], $term);
 		//echo ' -> update tijd<br>';
 	}
-	//echo "<br>\n";
+	echo "<br>\n";
 }
 
 

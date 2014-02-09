@@ -39,7 +39,7 @@ if($Checken) {
 		makeAdsInactive($term);
 		
 		$teller_n = $teller_c = 0;
-		$PlainMessage = $PlainItem = $HTMLItem = $HTMLMessage = $Subjects = '';
+		$PlainMessage = $PlainItem = $HTMLItem = $HTMLMessage = $Subjects = array('');
 		$ZoekData	= getZoekData($term);
 		$UserData = getUserData($ZoekData['user']);
 		$rss			= $UserData['RSS'];
@@ -138,11 +138,11 @@ if($Checken) {
 			$PlainHeader	.= "\n\n\n";
 		}
 		
-		if($debug == 1) {
-			echo "URL : $url<br>\nAantal : $aantal<br>\nMaximum : $maximum<br>\n<br>\n";
+		if($debug == 2) {
+			echo "URL : $URL<br>\nAantal : $aantal<br>\nMaximum : $maximum<br>\n<br>\n";
 			
-			if($maximum > 10) {
-				$maximum = 3;
+			if($maximum > 15) {
+				$maximum = 15;
 			}
 		}
 		
@@ -156,14 +156,15 @@ if($Checken) {
 				
 				if($array[$i] != "") {                        
 					$data			= getMarktplaatsData_v3($array[$i]);
-						
-					if($debug == 1) {
+					
+					if($debug == 2) {
+						echo '<hr>';
 						foreach($data as $key => $value) {
 							echo "$key -> $value<br>\n\n";
 						}
 					}
 								
-					if(NewItem($data, $term) OR changedItem($data, $term) OR $debug == 1) {
+					if(NewItem($data, $term) OR changedItem($data, $term)) {
 						if($rss == 0 OR $rss == 2) {
 							$pictures = explode('|', $data['picture']);
 							
@@ -229,6 +230,16 @@ if($Checken) {
 								$teller_n++;
 							}
 						}										
+					}
+					
+					if($debug == 1) {
+						if(NewItem($data, $term)) {
+							echo $data['title'] .' is nieuw : '. strftime("%a %e %b %H:%M", $data['date']) .'<br>';
+						} elseif(changedItem($data, $term)){
+							echo $data['title'] .' is gewijzigd<br>';
+						} else {
+							echo $data['title'] .' bestaat al<br>';
+						}				
 					}
 					
 					AddUpdateData($data, $term);
