@@ -18,10 +18,12 @@ include ("../../general_include/general_functions.php");
 include ("../include/inc_config_general.php");
 include ("../lng/language_$Language.php");
 include ("../include/inc_functions.php");
-$minAcces = 1;
+$minUserLevel = 1;
+$cfgProgDir = '../auth/';
+include($cfgProgDir. "secure.php");
 include ("../include/inc_head.php");
 
-if($_COOKIE["level"] > 1) {
+if($_SESSION['level'] > 1) {
 	echo "<a href='../check.php'>$strAdminCheck</a>\n";
 	echo "<p>\n";
 }
@@ -31,9 +33,9 @@ echo "<p>\n";
 echo "<a href='edit.php'>$strAdminAdd</a>\n";
 echo "<p>\n";
 
-if($_COOKIE["level"] > 1) {
-	echo "<a href='groep.php'>$strAdminSync</a>\n";
-	echo "<p>\n";
+if($_SESSION['level'] > 1) {
+	//echo "<a href='groep.php'>$strAdminSync</a>\n";
+	//echo "<p>\n";
 	echo "<a href='cleanup.php'>$strAdminClean</a>\n";
 	echo "<p>\n";
 	echo "<a href='log.php'>$strAdminLog</a>\n";
@@ -52,7 +54,8 @@ echo "<a href='account.php'>$strChangeAccount</a>\n";
 echo "<p>\n";
 echo "<a href='http://www.marktplaats.nl/' target='_blank'>$strAdminSite</a>\n";
 echo "<p>\n";
-echo "<a href='?uitloggen=true'>$strLogOff</a>\n";
+//echo "<a href='?uitloggen=true'>$strLogOff</a>\n";
+echo "<a href='". $cfgProgDir ."objects/logout.php'>$strLogOff</a>\n";
 
 include ('../include/inc_footer.php');
 ?>

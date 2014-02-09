@@ -18,9 +18,13 @@ include ("../../general_include/general_functions.php");
 include ("../include/inc_config_general.php");
 include ("../lng/language_$Language.php");
 include ("../include/inc_functions.php");
-include ("../include/inc_head.php");	
+$minUserLevel = 1;
+$cfgProgDir = '../auth/';
+include($cfgProgDir. "secure.php");
 
-$Termen				= getZoekTermen($_COOKIE["UserID"], '', '', '');
+include ("../include/inc_head.php");
+
+$Termen				= getZoekTermen($_SESSION['UserID'], '', '', '');
 
 echo "<table>";
 

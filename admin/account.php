@@ -18,25 +18,28 @@ include ("../../general_include/general_functions.php");
 include ("../include/inc_config_general.php");
 include ("../lng/language_$Language.php");
 include ("../include/inc_functions.php");
+$minUserLevel = 1;
+$cfgProgDir = '../auth/';
+include($cfgProgDir. "secure.php");
 include ("../include/inc_head.php");
 
 if($_POST['opslaan']) {
 	connect_db();
 	
-	if($_POST['new'] AND $_COOKIE["level"] > 1) {
+	if($_POST['new'] AND $_SESSION['level'] > 1) {
 		$sql		= "INSERT INTO $TableUsers ($UsersNaam, $UsersWachtwoord, $UsersMail, $UsersHTML, $UsersRSS, $UsersPostcode) VALUES ('". $_POST[naam] ."', '". $_POST[wachtwoord] ."', '". $_POST[mail] ."', '". $_POST[type] ."', '". $_POST[rss] ."', '". $_POST[pc] ."')";
 		if(mysql_query($sql)) {	echo $_POST[naam] . ' '. $strEditAdded;}
 	} else {
-		$sql		= "UPDATE $TableUsers SET $UsersNaam = '". $_POST[naam] ."', $UsersWachtwoord = '". $_POST[wachtwoord] ."', $UsersMail = '". $_POST[mail] ."', $UsersHTML = '". $_POST[type] ."', $UsersRSS = '". $_POST[rss] ."', $UsersPostcode = '". $_POST[pc] ."' WHERE $UsersID = ". $_COOKIE["UserID"] .";";
+		$sql		= "UPDATE $TableUsers SET $UsersNaam = '". $_POST[naam] ."', $UsersWachtwoord = '". $_POST[wachtwoord] ."', $UsersMail = '". $_POST[mail] ."', $UsersHTML = '". $_POST[type] ."', $UsersRSS = '". $_POST[rss] ."', $UsersPostcode = '". $_POST[pc] ."' WHERE $UsersID = ". $_SESSION['UserID'] .";";
 		if(mysql_query($sql)) {	echo $_POST[naam] . ' '. $strEditChanged; }
 	}	
 } else {	
 	echo "<form method='post' action='$_SERVER[PHP_SELF]'>\n";
 	
-	if(isset($_REQUEST['new']) AND $_COOKIE["level"] > 1) {
+	if(isset($_REQUEST['new']) AND $_SESSION['level'] > 1) {
 		echo "<input type='hidden' name='new' value='true'>\n";
 	} else {
-		$data = getUserData($_COOKIE["UserID"]);
+		$data = getUserData($_SESSION['UserID']);
 	}	
 	
 	echo "<b>$strAccountName</b><br>\n";

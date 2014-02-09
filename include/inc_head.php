@@ -13,20 +13,6 @@
 //
 //*********************************************************************
 
-$landingPage = isset($landingPage) && $landingPage;
-$publicPage = isset($publicPage) && $publicPage;
-if(!isset($minAcces)) { $minAcces = 1; }
-
-if(!$publicPage) {
-	if($_COOKIE["LoggedIn"] == false OR $_GET[uitloggen] == true) {
-		include('check_cookie.php');	
-	} elseif ($_COOKIE["LoggedIn"] == true) {
-		setcookie ("LoggedIn", true, time()+$CookieTime);
-		setcookie ("level", $_COOKIE["level"], time()+$CookieTime);
-		setcookie ("UserID", $_COOKIE["UserID"], time()+$CookieTime);	
-	}
-}
-
 echo "<!--     Deze pagina is onderdeel van $ScriptTitle $Version gemaakt door Matthijs Draijer     -->\n\n";
 ?>
 
@@ -53,9 +39,4 @@ if(!$publicPage && is_dir ('../install')) {
 	exit;
 }
 
-if(!$publicPage && $_COOKIE["level"] < $minAcces) {
-	echo "<font class='error'>Helaas, je hebt geen toegang tot deze pagina.</font>";
-	include ('inc_footer.php');
-	exit;
-}
 ?>

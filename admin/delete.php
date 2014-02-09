@@ -18,6 +18,9 @@ include ("../../general_include/general_functions.php");
 include ("../include/inc_config_general.php");
 include ("../lng/language_$Language.php");
 include ("../include/inc_functions.php");
+$minUserLevel = 1;
+$cfgProgDir = '../auth/';
+include($cfgProgDir. "secure.php");
 include ("../include/inc_head.php");		
 
 if(isset($_REQUEST['id'])) {

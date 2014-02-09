@@ -18,20 +18,20 @@ include ("../../general_include/general_functions.php");
 include ("../include/inc_config_general.php");
 include ("../lng/language_$Language.php");
 include ("../include/inc_functions.php");
+$minUserLevel = 1;
+$cfgProgDir = '../auth/';
+include($cfgProgDir. "secure.php");
 include ("../include/inc_head.php");
 
 if(isset($_REQUEST['forcedID'])) {
 	$Termen		= array($_REQUEST['forcedID']);
 } else {
-	$Termen		= getZoekTermen($_COOKIE["UserID"], 0);
+	$Termen		= getZoekTermen($_SESSION['UserID'], 0);
 }
 
 foreach($Termen as $term) {
-	$ZoekData	= getZoekData($term);
-	$String		= $ZoekData['q'];
-	
 	makeRSSFeed($term, '../');
-	echo "RSS-feed voor <i>". $String ."</i> gemaakt<br>\n";
+	echo "RSS-feed voor <i>". getZoekString($term) ."</i> gemaakt<br>\n";
 }
 
 include ('../include/inc_footer.php');

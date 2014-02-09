@@ -18,6 +18,9 @@ include ("../../general_include/general_functions.php");
 include ("../include/inc_config_general.php");
 include ("../lng/language_$Language.php");
 include ("../include/inc_functions.php");
+$minUserLevel = 1;
+$cfgProgDir = '../auth/';
+include($cfgProgDir. "secure.php");
 include ("../include/inc_head.php");
 
 if(isset($_REQUEST['toevoegen'])) { $toevoegen = $_REQUEST['toevoegen']; }
@@ -25,7 +28,7 @@ if(isset($_REQUEST['toevoegen'])) { $toevoegen = $_REQUEST['toevoegen']; }
 
 if(isset($_REQUEST['opslaan'])) {
 	$db 		= connect_db();
-	$sql = "INSERT INTO $TableNotepad ($NotepadUser, $NotepadTerm, $NotepadMID, $NotepadTijd, $NotepadBericht) VALUES (". $_COOKIE["UserID"] .", ". $_REQUEST['term'] .", ". $_REQUEST['id'] .", ". time() .", '". urlencode($_REQUEST['krabbel']) ."')";
+	$sql = "INSERT INTO $TableNotepad ($NotepadUser, $NotepadTerm, $NotepadMID, $NotepadTijd, $NotepadBericht) VALUES (". $_SESSION["UserID"] .", ". $_REQUEST['term'] .", ". $_REQUEST['id'] .", ". time() .", '". urlencode($_REQUEST['krabbel']) ."')";
 	if(!mysql_query($sql)) {
 		echo "Foutje [$sql]";
 	}
@@ -39,7 +42,7 @@ echo "<tr>\n";
 echo "	<td colspan='6'>&nbsp;</td>\n";		
 echo "</tr>\n";
 
-$Termen				= getZoekTermen($_COOKIE["UserID"], '', '');
+$Termen				= getZoekTermen($_SESSION['UserID'], '', '', '');
 
 foreach($Termen as $term) {
 	$Entry	= array();

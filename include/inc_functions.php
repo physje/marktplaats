@@ -505,7 +505,7 @@ function AddUpdateData($data, $term) {
 	$changed = changedItem($data, $term);	
 	$NewItem = NewItem($data, $term);
 	
-	echo $data['title'];
+	//echo $data['title'];
 	
 	if(!$NewItem AND $changed) {
 		# UPDATE titel		
@@ -520,7 +520,7 @@ function AddUpdateData($data, $term) {
 		UpdateData($data['id'], $term);
 		//echo ' -> update tijd<br>';
 	}
-	echo "<br>\n";
+	//echo "<br>\n";
 }
 
 

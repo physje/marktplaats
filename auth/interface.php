@@ -1,19 +1,5 @@
 <?php
-//*********************************************************************
-// Marktplaats Checker (c) 2006-2013 Matthijs Draijer
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; version 2 of the License.
-// 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-//*********************************************************************
 
-$publicPage = true;
 include ("../include/inc_head.php");
 
 echo "<form name='loginform' action='$_SERVER[PHP_SELF]' METHOD='post'>\n";
@@ -34,9 +20,9 @@ if ($message) {
 
 echo "<tr>\n";
 echo "	<td colspan=\"2\">$strAccountName:<br>\n";
-echo "  <center><input type=\"text\" name=\"loginname\" TABINDEX=\"1\" value='$quickName'></center>\n";
+echo "  <center><input type=\"text\" name=\"entered_login\" TABINDEX=\"1\" value='$quickName'></center>\n";
 echo "  $strAccountPW<br>\n";
-echo "  <center><input type=\"password\" name=\"wachtwoord\" TABINDEX=\"1\" value='$quickPassword'>\n";
+echo "  <center><input type=\"password\" name=\"entered_password\" TABINDEX=\"1\" value='$quickPassword'>\n";
 echo "  </td>\n";
 echo "</tr>\n";
 echo "<tr>\n";

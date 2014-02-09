@@ -18,8 +18,10 @@ include ("../../general_include/general_functions.php");
 include ("../include/inc_config_general.php");
 include ("../lng/language_$Language.php");
 include ("../include/inc_functions.php");
-$minAcces = 2;
-include ("../include/inc_head.php");	
+$minUserLevel = 2;
+$cfgProgDir = '../auth/';
+include($cfgProgDir. "secure.php");
+include ("../include/inc_head.php");
 setlocale(LC_ALL, 'nl_NL');
 
 $Termen				= getZoekTermen('', '', '', 1);

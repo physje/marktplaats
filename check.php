@@ -39,13 +39,10 @@ if($Checken) {
 		makeAdsInactive($term);
 		
 		$teller_n = $teller_c = 0;
-		$PlainMessage = $PlainItem = $HTMLItem = $HTMLMessage = $Subjects = array('');
+		$PlainMessage = $PlainItem = $HTMLItem = $HTMLMessage = $Subjects = array();
 		$ZoekData	= getZoekData($term);
 		$UserData = getUserData($ZoekData['user']);
-		$rss			= $UserData['RSS'];
-		//$url			= getURL($term);		
-		//$even			= true;		
-		//$URL			= "http://vernieuwd.marktplaats.nl/index.php?url=". urlencode($url);		
+		$rss			= $UserData['RSS'];		
 		$URL				= $ZoekData['URL'];
 		if($URL == '') {
 			$URL = getURL($term);
@@ -147,9 +144,9 @@ if($Checken) {
 		}
 		
 		for($i=1 ; $i <= $maximum ; $i++) {			
-			// Event. reclame buiten de deur houden
+			# Event. reclame buiten de deur houden
 			if(!strpos($array[$i], '<span class="mp-listing-priority-product">Topadvertentie</span>') AND !$SPAM) {							
-				// Deze is nog geen spam, dus daarom binnen de loop
+				# Deze is nog geen spam, dus daarom binnen de loop
 				if(strpos($array[$i], 'Advertenties door Admarkt') OR strpos($array[$i], 'Advertenties uit andere rubrieken')) {
 					$SPAM = true;					
 				}
@@ -167,12 +164,7 @@ if($Checken) {
 					if(NewItem($data, $term) OR changedItem($data, $term)) {
 						if($rss == 0 OR $rss == 2) {
 							$pictures = explode('|', $data['picture']);
-							
-							//$formattedPicture = array();						
-							//foreach($pictures as $key => $value) {
-							//	$formattedPicture[] = "<img src='http:$value' height='100'>";
-							//}
-						
+													
 							$PlainItem = strtoupper($data['title']). "\n";
 							$PlainItem .= makeTextBlock($data['descr_long'], 500). "\n";
 							$PlainItem .= $data['price']. "\n";
@@ -190,7 +182,6 @@ if($Checken) {
 							$Item .= "	<td>". makeTextBlock($data['descr_long'], 500) ."</td>\n";
 							$Item .= "</tr>\n";
 							$Item .= "<tr>\n";
-							//$Item .= "	<td>". implode('&nbsp;', $formattedPicture) ."</td>\n";
 							$Item .= "	<td>\n";
 							$Item .= "	<table>\n";
 							$Item .= "	<tr>\n";
@@ -304,7 +295,7 @@ if($Checken) {
 						$Subjects[] = $teller_n . " ". ($teller_n == 1 ? $strCheckItemNew : $strCheckItemsNew);
 					}
 					if($teller_c != 0) {
-						$Subjects[] = $teller_c . " ". ($teller_c == 1 ? $strCheckItemChanged : $strCheckItemsChanged);
+						$Subjects[] = $teller_c . " ". ($teller_c == 1 ? $strCheckItemChanged : $strCheckItemsChanged);						
 					}
 					
 					$mail = new PHPMailer;
@@ -325,8 +316,6 @@ if($Checken) {
 					} else {
 						$mail->Body	= $PlainMail;
 					}
-					
-					//echo $PlainMail;
     
 					if(!$mail->Send()) {
 						echo date("H:i") . " : $strMailError '". getZoekString($term) ."' ($term).<br>";

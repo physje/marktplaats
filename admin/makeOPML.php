@@ -18,10 +18,13 @@ include ("../../general_include/general_functions.php");
 include ("../include/inc_config_general.php");
 include ("../lng/language_$Language.php");
 include ("../include/inc_functions.php");
+$minUserLevel = 1;
+$cfgProgDir = '../auth/';
+include($cfgProgDir. "secure.php");
 
-$User		= getUserData($_COOKIE["UserID"]);
-$TermenInactive	= getZoekTermen($_COOKIE["UserID"], '', '', 0);
-$TermenActive		= getZoekTermen($_COOKIE["UserID"], '', '', 1);
+$User		= getUserData($_SESSION['UserID']);
+$TermenInactive	= getZoekTermen($_SESSION['UserID'], '', '', 0);
+$TermenActive		= getZoekTermen($_SESSION['UserID'], '', '', 1);
 
 $OPML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 $OPML .= "<opml version=\"1.0\">\n";
