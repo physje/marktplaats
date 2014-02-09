@@ -27,7 +27,7 @@ $admEmail = '';
   // May be left blank
 
 /****** Password Encryption ******/
-$passwordEncryptedWithMD5 = false;          // Set this to true if the passwords are encrypted with the MD5 algorithm
+$passwordEncryptedWithMD5 = true;          // Set this to true if the passwords are encrypted with the MD5 algorithm
 
 /**************************************************************/
 /*             End of phpSecurePages Configuration            */

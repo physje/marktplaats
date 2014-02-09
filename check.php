@@ -95,6 +95,7 @@ if($Checken) {
 		
 		//$reclame = "Door een bug in het script is marktplaats.nl enige tijd niet gecheckt.... probleem is nu verholpen.";
 		//$reclame = "De layout van marktplaats.nl is gewijzigd, het script en de zoektermen moesten daarvoor op de schop.<br>Controleer daarom of de zoekopdracht nog de juiste resultaten geeft en pas hem zonodig aan.";
+		$reclame = "De wachtwoorden van de inlog-accounts het script zijn op een andere manier versleuteld in de database. Om in te loggen kan het daarom nodig zijn opnieuw het wachtwoord op te vragen";
 		$extraWitregel = false;
 		
 		if(($rss == 0 OR $rss == 2) AND $reclame != '') {

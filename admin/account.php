@@ -27,10 +27,20 @@ if($_POST['opslaan']) {
 	connect_db();
 	
 	if($_POST['new'] AND $_SESSION['level'] > 1) {
-		$sql		= "INSERT INTO $TableUsers ($UsersNaam, $UsersWachtwoord, $UsersMail, $UsersHTML, $UsersRSS, $UsersPostcode) VALUES ('". $_POST[naam] ."', '". $_POST[wachtwoord] ."', '". $_POST[mail] ."', '". $_POST[type] ."', '". $_POST[rss] ."', '". $_POST[pc] ."')";
+		$sql		= "INSERT INTO $TableUsers ($UsersNaam, $UsersWachtwoord, $UsersMail, $UsersHTML, $UsersRSS, $UsersPostcode) VALUES ('". $_POST[naam] ."', '". md5($_POST[wachtwoord]) ."', '". $_POST[mail] ."', '". $_POST[type] ."', '". $_POST[rss] ."', '". $_POST[pc] ."')";
 		if(mysql_query($sql)) {	echo $_POST[naam] . ' '. $strEditAdded;}
-	} else {
-		$sql		= "UPDATE $TableUsers SET $UsersNaam = '". $_POST[naam] ."', $UsersWachtwoord = '". $_POST[wachtwoord] ."', $UsersMail = '". $_POST[mail] ."', $UsersHTML = '". $_POST[type] ."', $UsersRSS = '". $_POST[rss] ."', $UsersPostcode = '". $_POST[pc] ."' WHERE $UsersID = ". $_SESSION['UserID'] .";";
+	} else {		
+		$sql		= "UPDATE $TableUsers SET ";
+		$sql		.= "$UsersNaam = '". $_POST[naam] ."', ";		
+		if($_POST[wachtwoord] != '') {
+			$sql		.= "$UsersWachtwoord = '". md5($_POST[wachtwoord]) ."', ";
+		}
+		$sql		.= "$UsersMail = '". $_POST[mail] ."', ";
+		$sql		.= "$UsersHTML = '". $_POST[type] ."', ";
+		$sql		.= "$UsersRSS = '". $_POST[rss] ."', ";
+		$sql		.= "$UsersPostcode = '". $_POST[pc] ."' ";
+		$sql		.= "WHERE $UsersID = ". $_SESSION['UserID'] .";";
+		
 		if(mysql_query($sql)) {	echo $_POST[naam] . ' '. $strEditChanged; }
 	}	
 } else {	
@@ -46,7 +56,7 @@ if($_POST['opslaan']) {
 	echo "<input type='text' name='naam' size='50' value='". $data['naam'] ."'><br>\n";
 	echo "<br>\n";
 	echo "<b>$strAccountPW</b><br>\n";
-	echo "<input type='text' name='wachtwoord' size='50' value='". $data['wachtwoord'] ."'><br>\n";
+	echo "<input type='password' name='wachtwoord' size='50' value=''><br>\n";
 	echo "<br>\n";
 	echo "<b>$strAccountMail</b><br>\n";
 	echo "<input type='text' name='mail' size='50' value='". $data['mailadres'] ."'><br>\n";

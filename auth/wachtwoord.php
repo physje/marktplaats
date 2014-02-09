@@ -1,16 +1,18 @@
 <?php
-include_once('../../general_include/general_functions.php');
-include_once('../../general_include/general_config.php');
-include_once('../../general_include/class.phpmailer.php');
-include_once('../../general_include/class.html2text.php');
-include_once('../include/functions.php');
-include_once('../include/config.php');
-include_once('../include/HTML_TopBottom.php');
-connect_db();
+include ("../../general_include/general_config.php");
+include ("../../general_include/general_functions.php");
+include ("../../general_include/class.phpmailer.php");
+include ("../../general_include/class.html2text.php");
+
+include ("../include/inc_config_general.php");
+include ("../lng/language_$Language.php");
+include ("../include/inc_functions.php");
+include ("../include/inc_head.php");
 
 if(isset($_POST['opvragen'])) {
+	connect_db();
 	$invoer	= $_POST['invoer'];
-	$sql		= "SELECT * FROM $TableUsers WHERE $UsersUsername like '$invoer' OR $UsersAdres like '$invoer'";
+	$sql		= "SELECT * FROM $TableUsers WHERE $UsersNaam like '$invoer' OR $UsersMail like '$invoer'";
 	$result = mysql_query($sql);
 	
 	if(mysql_num_rows($result) == 0) {
@@ -18,21 +20,22 @@ if(isset($_POST['opvragen'])) {
 	} else {
 		$row	= mysql_fetch_array($result);
 		$id		= $row[$UsersID];
-		$data	= getMemberDetails($id);
-		
 		$nieuwPassword = generatePassword(12);
 		
-		saveUpdateMember($id, $data['naam'], $data['username'], $nieuwPassword, $data['mail'], $data['level'], $data['account']);
+		$sql		= "UPDATE $TableUsers SET $UsersWachtwoord = '". md5($nieuwPassword) ."' WHERE $UsersID = $id";
+		mysql_query($sql);
+		
+		$data = getUserData($id);
 		
 		$Mail[] = "Beste ". $data['naam'] .",<br>";
 		$Mail[] = "<br>";
 		$Mail[] = "je hebt een nieuw wachtwoord aangevraagd voor $ScriptTitle $Version.<br>";
 		$Mail[] = "Je kan inloggen met :<br>";
 		$Mail[] = "<br>";
-		$Mail[] = "Loginnaam : ". $data['username'] ."<br>";
+		$Mail[] = "Loginnaam : ". $data['naam'] ."<br>";
 		$Mail[] = "Wachtwoord : ". $nieuwPassword ."<br>";
 		$Mail[] = "<br>";
-		$Mail[] = "Met deze gegevens kan je via <a href='". $ScriptURL ."admin/edit_account.php'>". $ScriptURL ."admin/edit_account.php</a> je eigen wachtwoord instellen<br>";	
+		$Mail[] = "Met deze gegevens kan je via <a href='". $ScriptRoot ."admin/account.php'>". $ScriptRoot ."admin/account.php</a> je eigen wachtwoord instellen<br>";	
 		$HTMLMail = implode("\n", $Mail);
 		
 		$html =& new html2text($HTMLMail);
@@ -40,7 +43,7 @@ if(isset($_POST['opvragen'])) {
 		$PlainText = $html->get_text();
 		
 		$mail = new PHPMailer;
-		$mail->AddAddress($data['mail'], $data['naam']);
+		$mail->AddAddress($data['mailadres'], $data['naam']);
 		$mail->From     = $ScriptMailAdress;
 		$mail->FromName = $ScriptTitle;
 		$mail->Subject	= $SubjectPrefix ."Nieuw wachtwoord voor $ScriptTitle";
@@ -49,10 +52,11 @@ if(isset($_POST['opvragen'])) {
 		$mail->AltBody	= $PlainText;
 		
 		if(!$mail->Send()) {
-			toLog('error', '', '', "Kon geen inloggegevens versturen naar ". $data['naam']);
 			$text[] = "Inloggegevens konden helaas niet verstuurd worden";
-		} else {
-			toLog('info', '', '', "Inloggegevens verstuurd naar ". $data['naam']);
+			
+			echo $HTMLMail;
+			
+		} else {			
 			$text[] = "Inloggegevens zijn verstuurd";
 		}		
 	}	
