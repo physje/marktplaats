@@ -418,7 +418,8 @@ function getMarktplaatsData_v3($string) {
 	
 	if($thumbs[0] != '') {
 		foreach($thumbs as $thumb) {
-			$picture[] = str_replace ("_84.JPG", "_82.JPG", $thumb); 
+			//$picture[] = str_replace ("_84.JPG", "_82.JPG", $thumb); 
+			$picture[] = str_replace ('_84.JPG', '_82.JPG', str_replace('http://', '//', $thumb));
 		}
 	} else {
 		$picture[] = '//s.marktplaats.com/aurora/res/images/no_photo.jpg'; 
@@ -1128,7 +1129,7 @@ function makeRSSFeed($term, $prefix) {
 		$feedItem .= "         <link>". urldecode($PageData['URL']) ."</link>\n";
 		$feedItem .= "         <description><![CDATA[". urldecode($PageData['beschrijving']) ."<br>\n<img src='$src'>]]></description>\n";
 		$feedItem .= "         <pubDate>". gmdate ("D, j M Y H:i:s", $PageData['datum']) ." GMT</pubDate>\n";
-		$feedItem .= "         <author>". urldecode($PageData['verkoper']) ." | ". $PageData['afstand'] ." km | ". str_replace('€', 'EUR', $PageData['prijs']) ."</author>\n";
+		$feedItem .= "         <author>". urldecode($PageData['verkoper']) ." | ". $PageData['afstand'] ." km | ". str_replace('ï¿½', 'EUR', $PageData['prijs']) ."</author>\n";
 		$feedItem .= "      </item>";
 	
 		$feedItems[] = $feedItem;
