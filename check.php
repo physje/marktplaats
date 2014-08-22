@@ -197,7 +197,7 @@ if($Checken) {
 									$atr = 'height="100"';
 								}
 								
-								$Item .= "		<td><img src='http:$foto' $atr></td>\n";
+								$Item .= "		<td><a href='". str_replace('_82.', '_85.', $foto) ."'><img src='http:$foto' $atr></a></td>\n";
 								
 								if(fmod($key, 3) == 2) {
 									$Item .= "	</tr>\n";
@@ -251,12 +251,12 @@ if($Checken) {
 				$PlainFooter .= "$strCheckResults : ". $url;
 				$PlainFooter .= "\n\n";
 				$PlainFooter .= $ScriptTitle.' '.$Version ."\n";
-				$PlainFooter .= "© ". (date("Y") != 2006 ? '2006-' : ''). date("Y") ." Matthijs Draijer";
+				$PlainFooter .= "Â© ". (date("Y") != 2006 ? '2006-' : ''). date("Y") ." Matthijs Draijer";
 			
 				$FooterText = "	<table width=100%>\n";
 				$FooterText .= "	<tr>\n";
 				$FooterText .= "		<td align='left'><a href='". $ScriptRoot ."admin/edit.php?id=$term'>$strCheckCommand</a> | <a href='$URL'>$strCheckResults</a> | <a href='". $ScriptRoot ."RSS/". $ZoekData['key'] .".xml'>RSS-feed</a></td>\n";
-				$FooterText .= "		<td align='right'>© ". (date("Y") != 2006 ? '2006-' : ''). date("Y") ." <a href='mailto:Matthijs Draijer <hotscripts@draijer.org>?Subject=Opmerking over $ScriptTitle $Version'>Matthijs Draijer</a>\n";
+				$FooterText .= "		<td align='right'>Â© ". (date("Y") != 2006 ? '2006-' : ''). date("Y") ." <a href='mailto:Matthijs Draijer <hotscripts@draijer.org>?Subject=Opmerking over $ScriptTitle $Version'>Matthijs Draijer</a>\n";
 				$FooterText .= "	</tr>\n";
 				$FooterText .= "	</table>\n";
 				
