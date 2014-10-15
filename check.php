@@ -72,7 +72,7 @@ if($Checken) {
 		
 		$string	= getString($beginString, $eindString, $inhoud, 0);
 		
-		$array		= explode('<tr class="search-result defaultSnippet group-', $string[0]);
+		$array		= explode('<tr class="search-result', $string[0]);
 		$aantal		= count($array);
 			
 		$teller_n		= 0;
@@ -93,9 +93,7 @@ if($Checken) {
 			$HTMLHeader	.= "<table width='100%' align='center' border=0>\n";
 		}
 		
-		//$reclame = "Door een bug in het script is marktplaats.nl enige tijd niet gecheckt.... probleem is nu verholpen.";
-		//$reclame = "De layout van marktplaats.nl is gewijzigd, het script en de zoektermen moesten daarvoor op de schop.<br>Controleer daarom of de zoekopdracht nog de juiste resultaten geeft en pas hem zonodig aan.";
-		$reclame = "De wachtwoorden van de inlog-accounts het script zijn op een andere manier versleuteld in de database. Om in te loggen kan het daarom nodig zijn opnieuw het wachtwoord op te vragen";
+		$reclame = '';
 		$extraWitregel = false;
 		
 		if(($rss == 0 OR $rss == 2) AND $reclame != '') {
@@ -144,11 +142,18 @@ if($Checken) {
 			}
 		}
 		
-		for($i=1 ; $i <= $maximum ; $i++) {			
+		for($i=1 ; $i <= $maximum ; $i++) {
+			if($debug == 2) {
+				echo '<hr>';
+				echo '[$i = '. $i .']<br>';
+				echo htmlspecialchars($array[$i]).'<br>';
+			} 
+				
 			# Event. reclame buiten de deur houden
-			if(!strpos($array[$i], '<span class="mp-listing-priority-product">Topadvertentie</span>') AND !$SPAM) {							
+			if(!strpos($array[$i], '<span class="mp-listing-priority-product">Topadvertentie</span>') AND !$SPAM) {				
 				# Deze is nog geen spam, dus daarom binnen de loop
 				if(strpos($array[$i], 'Advertenties door Admarkt') OR strpos($array[$i], 'Advertenties uit andere rubrieken')) {
+					if($debug == 2) { echo '[SPAM gedetecteerd]<br>'; }
 					$SPAM = true;					
 				}
 				
@@ -233,10 +238,10 @@ if($Checken) {
 							echo $data['title'] .' bestaat al<br>';
 						}				
 					}
-					
+									
 					AddUpdateData($data, $term);
 				}				
-			}
+			} elseif($debug == 2) { echo '[topadvertentie]<br>'; }
 		}
 				
 		if($teller_n > 0 OR $teller_c > 0 OR $debug == 1) {

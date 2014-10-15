@@ -100,6 +100,6 @@ $NotepadBericht		= 'bericht';
 $ScriptDownload   = "http://www.draijer.org/download.php";
 $ScriptTitle      = "Marktplaats Checker";
 $ScriptDescr	  	= "Marktplaats Checker is a script which checks the site marktplaats.nl. Every time the script is running it checks marktplaats.nl for new items you are looking for. If there are, you will get a mail notification.";    // nog toevoegen in inc_install
-$Version          = "v2.3";
+$Version          = "v3.0";
 
 ?>
