@@ -393,8 +393,10 @@ function getMarktplaatsData_v3($string) {
 	//$title				= getString('"thumb-placeholder-centered juiceless-link" title="', '"', $url[1], 0); 
 	$title				= getString('" title="', '"', $url[1], 0);
 	$beschrijving	= getString('<span class="mp-listing-description wrapped">', '</span>', $title[1], 0); 
-	$prijs				= getString('<span class="price">', '</span>', $beschrijving[1], 0); 
-	$datum				= getString('<td class="column-date">', '</td>', $prijs[1], 0);
+	//$prijs				= getString('<span class="price">', '</span>', $beschrijving[1], 0); 
+	$prijs				= getString('<div class="price-new ellipsis">', '</div>', $beschrijving[1], 0); 
+	//$datum				= getString('<td class="column-date">', '</td>', $prijs[1], 0);
+	$datum				= getString('<div class="date">', '</div>', $prijs[1], 0);
 	$plaats				= getString(' <div class="location-name">', ',', $datum[1], 0);
 	$provincie		= getString(',', '</div>', $plaats[1], 0); 
 	$afstand			= getString('<div class="distance">', 'km', $provincie[1], 0); 
