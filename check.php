@@ -72,7 +72,8 @@ if($Checken) {
 		
 		$string	= getString($beginString, $eindString, $inhoud, 0);
 		
-		$array		= explode('<tr class="search-result', $string[0]);
+		//$array		= explode('<tr class="search-result', $string[0]);
+		$array		= explode('<article class="row search-result defaultSnippet group-', $string[0]);
 		$aantal		= count($array);
 			
 		$teller_n		= 0;
