@@ -27,7 +27,7 @@ if(isset($_REQUEST['toevoegen'])) { $toevoegen = $_REQUEST['toevoegen']; }
 
 
 if(isset($_REQUEST['opslaan'])) {
-	$db 		= connect_db();
+	$db 		= $db = connect_db();
 	$sql = "INSERT INTO $TableNotepad ($NotepadUser, $NotepadTerm, $NotepadMID, $NotepadTijd, $NotepadBericht) VALUES (". $_SESSION["UserID"] .", ". $_REQUEST['term'] .", ". $_REQUEST['id'] .", ". time() .", '". urlencode($_REQUEST['krabbel']) ."')";
 	if(!mysql_query($sql)) {
 		echo "Foutje [$sql]";

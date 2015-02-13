@@ -24,7 +24,7 @@ include($cfgProgDir. "secure.php");
 include ("../include/inc_head.php");
 
 if($_POST['opslaan']) {
-	connect_db();
+	$db = connect_db();
 	
 	if($_POST['new'] AND $_SESSION['level'] > 1) {
 		$sql		= "INSERT INTO $TableUsers ($UsersNaam, $UsersWachtwoord, $UsersMail, $UsersHTML, $UsersRSS, $UsersPostcode) VALUES ('". $_POST[naam] ."', '". md5($_POST[wachtwoord]) ."', '". $_POST[mail] ."', '". $_POST[type] ."', '". $_POST[rss] ."', '". $_POST[pc] ."')";
