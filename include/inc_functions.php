@@ -402,7 +402,7 @@ function getMarktplaatsData_v3($string) {
 	$afstand			= getString('<div class="distance">', 'km', $provincie[1], 0); 
 	
 	$data					= file_get_contents($url[0]);
-	$bezoeken			= getString('<div id="vip-ad-count">', 'x gezien', $data, 0);	
+	$bezoeken			= getString('<span id="view-count">', '</span>', $data, 0);	
 	$DatumAll			= getString('sinds ', '</div>', $bezoeken[1], 0); 
 	$id						= getString('data-advertisement-id="', '"', $DatumAll[1], 0);
 	$verkoper_id	= getString('<a href="http://www.marktplaats.nl/verkopers/', '.html?', $data, 0); 
