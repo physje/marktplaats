@@ -10,15 +10,15 @@ include ("../include/inc_functions.php");
 include ("../include/inc_head.php");
 
 if(isset($_POST['opvragen'])) {
-	connect_db();
+	$db = connect_db();
 	$invoer	= $_POST['invoer'];
 	$sql		= "SELECT * FROM $TableUsers WHERE $UsersNaam like '$invoer' OR $UsersMail like '$invoer'";
-	$result = mysql_query($sql);
+	$result = mysqli_query($db, $sql);
 	
-	if(mysql_num_rows($result) == 0) {
+	if(mysqli_num_rows($result) == 0) {
 		$text[] = "Er is helaas niks gevonden met '$invoer'";
 	} else {
-		$row	= mysql_fetch_array($result);
+		$row	= mysqli_fetch_array($result);
 		$id		= $row[$UsersID];
 		$nieuwPassword = generatePassword(12);
 		

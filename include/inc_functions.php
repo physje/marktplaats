@@ -66,8 +66,8 @@ function getZoekTermen($id, $dag, $uur, $active) {
 	
 	//echo '['. $sql .']';
 
-	$result = mysql_query($sql);	
-	if($row = mysql_fetch_array($result)) {
+	$result = mysqli_query($db, $sql);	
+	if($row = mysqli_fetch_array($result)) {
 		do {
 			if($active == 0 AND $id == 0) {
 				$ZoekTermen[] = $row[$LichtingTerm];
@@ -75,7 +75,7 @@ function getZoekTermen($id, $dag, $uur, $active) {
 				$ZoekTermen[] = $row[$ZoekenID];
 			}
 		}
-		while($row = mysql_fetch_array($result));
+		while($row = mysqli_fetch_array($result));
 	}
 	
 	if(is_array($ZoekTermen)) {
@@ -106,13 +106,13 @@ function getZoekTermen($id, $lichting) {
 		$sql = "SELECT $ZoekenID FROM $TableZoeken WHERE $ZoekenUser = $id". $postFix;
 	}
 		
-	$result = mysql_query($sql);
+	$result = mysqli_query($db, $sql);
 	
-	if($row = mysql_fetch_array($result)) {
+	if($row = mysqli_fetch_array($result)) {
 		do {
 			$ZoekTermen[] = $row[$ZoekenID];
 		}
-		while($row = mysql_fetch_array($result));
+		while($row = mysqli_fetch_array($result));
 	}
 	
 	if(is_array($ZoekTermen)) {
@@ -126,17 +126,17 @@ function getZoekTermen($id, $lichting) {
 function getURL($id) {
 	global $TableZoeken, $TableUsers, $ZoekenID, $ZoekenUser, $ZoekenTerm, $ZoekenOr, $ZoekenNot, $ZoekenTitel, $ZoekenGroep, $ZoekenSubGroep, $ZoekenPrijsMin, $ZoekenPrijsMax, $ZoekenGeenPrijs, $ZoekenLokatie, $ZoekenPostcode, $ZoekenAfstand, $ZoekenProvincie, $ZoekenFoto, $ZoekenPayPal, $UsersID, $UsersPostcode;
 	
-	$db			= connect_db();
+	$db			= $db = connect_db();
 	$sql		= "SELECT * FROM $TableZoeken WHERE $ZoekenID = $id";	
-	$result = mysql_query($sql);
-	$row		= mysql_fetch_array($result);
+	$result = mysqli_query($db, $sql);
+	$row		= mysqli_fetch_array($result);
 		
 	if($row[$ZoekenPostcode] != 0) {
 		$postcode = $row[$ZoekenPostcode];
 	} else {
 		$sql_user			= "SELECT * FROM $TableUsers WHERE $UsersID = ". $row[$ZoekenUser];
 		$result_user	= mysql_query($sql_user);
-		$row_user			= mysql_fetch_array($result_user);
+		$row_user			= mysqli_fetch_array($result_user);
 		$postcode			= $row_user[$UsersPostcode];
 	}
 	
@@ -405,10 +405,10 @@ function getMarktplaatsData_v3($string) {
 	$bezoeken			= getString('<span id="view-count">', '</span>', $data, 0);	
 	$DatumAll			= getString('sinds ', '</div>', $bezoeken[1], 0); 
 	$id						= getString('data-advertisement-id="', '"', $DatumAll[1], 0);
-	$verkoper_id	= getString('<a href="http://www.marktplaats.nl/verkopers/', '.html">', $data, 0); 
+	$verkoper_id	= getString('<a href="http://www.marktplaats.nl/verkopers/', '.html?', $data, 0); 
 	//$postcode			= getString("['ad.zipcode']='", "';", $data, 0); 
-	$verkoper			= getString('">', '</a>', $verkoper_id[1], 0); 
-	$omschrijving	= getString('<div id="vip-ad-description" class="wrapped">', '</div>', $id[1], 0);
+	$verkoper			= getString('<h2 class="name" title="', '">', $verkoper_id[1], 0); 
+	$omschrijving	= getString('<div id="vip-ad-description" class="wrapped">', '</div>', $id[1], 0); 
 		 
 	if(strpos($data, '<nobr><small>')) { 
 		$prijs_add		= getString("<nobr><small>(", ")</small></nobr>", $data, 0); 
@@ -460,9 +460,9 @@ function NewItem($data, $term) {
 	
 	$db = connect_db();
 	$sql = "SELECT * FROM $TableData WHERE $DataMarktplaatsID = $id AND $DataZoekterm = $term";
-	$result = mysql_query($sql);
+	$result = mysqli_query($db, $sql);
 	
-	if($row = mysql_fetch_array($result))	{
+	if($row = mysqli_fetch_array($result))	{
 		return false;
 	} else {
 		//echo '{'. $data['title'] .'}';
@@ -480,10 +480,10 @@ function changedItem($data, $term) {
 		$id			= $data['id'];
 		$titel	= $data['title'];
 	
-		$db			= connect_db();
+		$db			= $db = connect_db();
 		$sql		= "SELECT * FROM $TableData WHERE $DataMarktplaatsID = $id AND $DataZoekterm = $term";
-		$result = mysql_query($sql);	
-		$row 		= mysql_fetch_array($result);
+		$result = mysqli_query($db, $sql);	
+		$row 		= mysqli_fetch_array($result);
 		
 		if($row[$DataTitle] == urlencode($titel)) {			
 			return false;
@@ -497,9 +497,9 @@ function changedItem($data, $term) {
 function makeAdsInactive($term) {
 	global $TableData, $DataZoekterm, $DataActive;
 	
-	$db			= connect_db();
+	$db			= $db = connect_db();
 	$sql = "UPDATE $TableData SET $DataActive = 0 WHERE $DataZoekterm = $term";
-	$result = mysql_query($sql);	
+	$result = mysqli_query($db, $sql);	
 }
 
 
@@ -533,7 +533,7 @@ function AddData($data, $term) {
 	
 	$tijd	= time();
 	
-	$db 	= connect_db();
+	$db 	= $db = connect_db();
 	$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged) VALUES (". $data['id'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."' ,'". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."', '". $data['afstand'] ."',	$term, $tijd, $tijd)";
 	
 	if(mysql_query($sql)) {
@@ -550,7 +550,7 @@ function UpdateData($id, $term) {
 	
 	$tijd	= time();
 	
-	$db 	= connect_db();
+	$db 	= $db = connect_db();
 	$sql	= "UPDATE $TableData SET $DataChanged = $tijd, $DataActive = '1' WHERE $DataMarktplaatsID = '$id'";
 	
 	if(mysql_query($sql)) {
@@ -567,7 +567,7 @@ function changeData($data, $term) {
 	$id = $data['id'];	
 	$tijd	= time();
 	
-	connect_db();	
+	$db = connect_db();	
 	
 	$sql	= "DELETE FROM $TableData WHERE $DataMarktplaatsID = '$id'";	
 	if(mysql_query($sql)) {
@@ -587,7 +587,7 @@ function changeData($data, $term) {
 
 function deleteURL($term) {
 	global $TableZoeken, $TableLichting, $ZoekenID, $LichtingTerm;
-	$db	= connect_db();	
+	$db	= $db = connect_db();	
 	$sql = "DELETE FROM $TableZoeken WHERE $ZoekenID = '$term'";
 	$sql_lichting = "DELETE FROM $TableLichting WHERE $LichtingTerm = $term";
 				
@@ -600,7 +600,7 @@ function deleteURL($term) {
 
 function deleteData($term) {
 	global $TableData, $DataZoekterm;
-	$db	= connect_db();	
+	$db	= $db = connect_db();	
 	$sql = "DELETE FROM $TableData WHERE $DataZoekterm = '$term'";
 		
 	if(mysql_query($sql)) {
@@ -707,10 +707,10 @@ function getMaand($maand) {
 function getZoekString($id) {
 	global $TableZoeken, $ZoekenID, $ZoekenNaam, $ZoekenTerm;
 	
-	$db			= connect_db();
+	$db			= $db = connect_db();
 	$sql		= "SELECT * FROM $TableZoeken WHERE $ZoekenID = $id";	
-	$result = mysql_query($sql);
-	$row		= mysql_fetch_array($result);
+	$result = mysqli_query($db, $sql);
+	$row		= mysqli_fetch_array($result);
 	
 	if($row[$ZoekenNaam] != '') {
 		return $row[$ZoekenNaam];
@@ -724,10 +724,10 @@ function getZoekString($id) {
 function getAdTitle($id) {
 	global $TableData, $DataMarktplaatsID, $DataTitle;
 	
-	$db			= connect_db();
+	$db			= $db = connect_db();
 	$sql		= "SELECT * FROM $TableData WHERE $DataMarktplaatsID = $id";	
-	$result = mysql_query($sql);
-	$row		= mysql_fetch_array($result);
+	$result = mysqli_query($db, $sql);
+	$row		= mysqli_fetch_array($result);
 	
 	$output	= urldecode($row[$DataTitle]);
 	
@@ -749,9 +749,9 @@ function getGroepen($id) {
 		$sql = "SELECT * FROM $TableSubGroep WHERE $SubGroepGroep = $id";
 	}
 	
-	$result = mysql_query($sql);
+	$result = mysqli_query($db, $sql);
 	
-	if($row = mysql_fetch_array($result)) {
+	if($row = mysqli_fetch_array($result)) {
 		do {
 			if($id == '') {
 				$key		= $row[$GroepGroep];
@@ -761,7 +761,7 @@ function getGroepen($id) {
 				$Groepen[$key]	= $row[$SubGroepNaam];
 			}
 		}
-		while($row = mysql_fetch_array($result));
+		while($row = mysqli_fetch_array($result));
 	}
 	
 	return $Groepen;
@@ -770,10 +770,10 @@ function getGroepen($id) {
 function getZoekData($id) {
 	global $TableZoeken, $TableLichting, $ZoekenID, $ZoekenActive, $ZoekenUser, $ZoekenTerm, $ZoekenOr, $ZoekenNot, $ZoekenTitel, $ZoekenGroep, $ZoekenSubGroep, $ZoekenPrijsMin, $ZoekenPrijsMax, $ZoekenGeenPrijs, $ZoekenLokatie, $ZoekenPostcode, $ZoekenAfstand, $ZoekenProvincie, $ZoekenFoto, $ZoekenPayPal, $ZoekenKey, $LichtingTerm, $LichtingUur, $LichtingDag, $ZoekenCC, $ZoekenNaam, $ZoekenURL;
 	
-	$db	= connect_db();
+	$db = connect_db();
 	$sql	= "SELECT * FROM $TableZoeken WHERE $ZoekenID = $id";	
-	$result = mysql_query($sql);
-	$row = mysql_fetch_array($result);
+	$result = mysqli_query($db, $sql);
+	$row = mysqli_fetch_array($result);
 	
 	$data['active']		= $row[$ZoekenActive];
 	$data['user']			= $row[$ZoekenUser];
@@ -798,14 +798,14 @@ function getZoekData($id) {
 	$data['URL']			= $row[$ZoekenURL];
 	
 	$sql		= "SELECT * FROM $TableLichting WHERE $LichtingTerm = $id";
-	$result	= mysql_query($sql);
-	if($row = mysql_fetch_array($result)) {
+	$result = mysqli_query($db, $sql);
+	if($row = mysqli_fetch_array($result)) {
 		do {
 			$uur = $row[$LichtingUur];
 			$dag = $row[$LichtingDag];
 			$uren[$uur] = 1;
 			$dagen[$dag] = 1;			
-		} while($row = mysql_fetch_array($result));
+		} while($row = mysqli_fetch_array($result));
 	}
 	
 	$data['uur'] = $uren;
@@ -816,7 +816,7 @@ function getZoekData($id) {
 
 //function saveURL($id, $user, $active, $q, $ts, $g, $u, $pmin, $pmax, $np, $loc_type, $postcode, $distance, $pv, $f, $or, $not, $CC, $naam, $dag, $uur) {
 //	global $TableZoeken, $TableLichting, $ZoekenActive, $ZoekenLichting, $ZoekenOr, $ZoekenNot, $ZoekenUser, $ZoekenTerm, $ZoekenTitel, $ZoekenGroep, $ZoekenSubGroep, $ZoekenPrijsMin, $ZoekenPrijsMax, $ZoekenGeenPrijs, $ZoekenLokatie, $ZoekenPostcode, $ZoekenAfstand, $ZoekenProvincie, $ZoekenFoto, $ZoekenID, $ZoekenKey, $ZoekenCC, $ZoekenNaam, $LichtingTerm, $LichtingUur, $LichtingDag;
-//	$db	= connect_db();
+//	$db	= $db = connect_db();
 //	
 //	if($id == '') {
 //		$key = generateKey(8);
@@ -846,7 +846,7 @@ function getZoekData($id) {
 
 function saveURL($id, $user, $active, $url, $CC, $naam, $dag, $uur) {
 	global $TableZoeken, $TableLichting, $ZoekenActive, $ZoekenUser, $ZoekenID, $ZoekenKey, $ZoekenCC, $ZoekenNaam, $ZoekenURL, $LichtingTerm, $LichtingUur, $LichtingDag;
-	$db	= connect_db();
+	$db	= $db = connect_db();
 	
 	if($id == '') {
 		$key = generateKey(8);
@@ -878,10 +878,10 @@ function saveURL($id, $user, $active, $url, $CC, $naam, $dag, $uur) {
 function isActive($id) {
 	global $TableZoeken, $ZoekenID, $ZoekenActive;
 	
-	$db			= connect_db();
+	$db			= $db = connect_db();
 	$sql		= "SELECT * FROM $TableZoeken WHERE $ZoekenID = $id";	
-	$result = mysql_query($sql);
-	$row		= mysql_fetch_array($result);
+	$result = mysqli_query($db, $sql);
+	$row		= mysqli_fetch_array($result);
 	
 	if($row[$ZoekenActive] == 1) {
 		return true;
@@ -893,18 +893,18 @@ function isActive($id) {
 function getPages($term) {
 	global $TableData, $DataID, $DataURL, $DataZoekterm, $DataAdded;
 	
-	$db 		= connect_db();
+	$db 		= $db = connect_db();
 	$sql		= "SELECT $DataID, $DataURL FROM $TableData WHERE $DataZoekterm = '$term' ORDER BY $DataAdded DESC";
-	$result = mysql_query($sql);
+	$result = mysqli_query($db, $sql);
 	
-	$row		= mysql_fetch_array($result);
+	$row		= mysqli_fetch_array($result);
 	
 	do
 	{
 		$key					= $row[$DataID];
 		$Pages[$key]	= $row[$DataURL];
 	}
-	while ($row = mysql_fetch_array($result));
+	while ($row = mysqli_fetch_array($result));
 	
 	return $Pages;
 }
@@ -912,7 +912,7 @@ function getPages($term) {
 function deletePage($term, $id) {
 	global $TableData, $TableNotepad, $DataMarktplaatsID, $NotepadTerm, $NotepadMID, $NotepadTijd, $NotepadBericht;
 	
-	$db 		= connect_db();
+	$db 		= $db = connect_db();
 	$sql		= "DELETE FROM $TableData WHERE $DataMarktplaatsID = '$id'";
 	
 	if(mysql_query($sql)) {
@@ -922,9 +922,9 @@ function deletePage($term, $id) {
 	}
 	
 	$sql		= "SELECT * FROM $TableNotepad WHERE $NotepadMID = $id";
-	$result = mysql_query($sql);
+	$result = mysqli_query($db, $sql);
 		
-	if(mysql_num_rows($result) > 0) {		
+	if(mysqli_num_rows($result) > 0) {		
 		$sql = "INSERT INTO $TableNotepad ($NotepadTerm, $NotepadMID, $NotepadTijd, $NotepadBericht) VALUES ($term, $id, ". time() .", '". urlencode('Advertentie bestaat niet meer') ."')";
 			
 		if(mysql_query($sql)) {
@@ -939,7 +939,7 @@ function writeToLog($term, $string, $id = '') {
 	global $TableLog, $LogTijd, $LogIP, $LogTerm, $LogMarktplaatsID, $LogLog;
 	
 	$tijd		= time();
-	$db 		= connect_db();
+	$db 		= $db = connect_db();
 	$sql		= "INSERT INTO $TableLog ($LogTijd, $LogIP, $LogTerm, $LogMarktplaatsID, $LogLog) VALUES ('$tijd', '$_SERVER[REMOTE_ADDR]', '$term', '$id', '$string');";
 		
 	if(!mysql_query($sql)) {
@@ -949,7 +949,7 @@ function writeToLog($term, $string, $id = '') {
 
 function getLogData($begin, $eind, $id, $term, $aantal) {
 	global $TableLog, $LogTijd, $LogIP, $LogTerm, $LogMarktplaatsID, $LogLog;
-	$db 		= connect_db();
+	$db 		= $db = connect_db();
 		
 	if($begin != '' AND $eind != '')	{	$where[]	= "$LogTijd BETWEEN $begin AND $eind"; }
 	if($id != '') 										{	$where[]	= "$LogMarktplaatsID = '$id'"; }
@@ -958,7 +958,7 @@ function getLogData($begin, $eind, $id, $term, $aantal) {
 	$sql		= "SELECT * FROM $TableLog WHERE " . implode(' AND ', $where) ." ORDER BY $LogTijd DESC LIMIT 0, $aantal;";
 	$result	= mysql_query($sql);
 
-	if($row = mysql_fetch_array($result))
+	if($row = mysqli_fetch_array($result))
 	{
 		do
 		{
@@ -970,7 +970,7 @@ function getLogData($begin, $eind, $id, $term, $aantal) {
 			$i++;
 			
 		}
-		while($row = mysql_fetch_array($result));
+		while($row = mysqli_fetch_array($result));
 	}
 	
 	return $data;	
@@ -979,7 +979,7 @@ function getLogData($begin, $eind, $id, $term, $aantal) {
 function getNumberOfAds($term, $old) {
 	global $TableData, $DataMarktplaatsID, $DataZoekterm, $DataChanged, $OudeAdvTijd;
 		
-	$db 	= connect_db();
+	$db 	= $db = connect_db();
 	
 	$sql	 = "SELECT * FROM $TableData WHERE $DataZoekterm = '$term' ";
 	
@@ -988,8 +988,8 @@ function getNumberOfAds($term, $old) {
 		$sql	.= "AND $DataChanged < $tijd";
 	}
 	
-	$result	= mysql_query($sql);	
-	return mysql_num_rows($result);
+	$result = mysqli_query($db, $sql);	
+	return mysqli_num_rows($result);
 }
 
 
@@ -998,12 +998,12 @@ function getAds($term, $old) {
 	
 	$Pages	= array();
 		
-	$db 		= connect_db();	
+	$db 		= $db = connect_db();	
 	
 	if($old) {
 		$sql_tijd	= "SELECT max($DataChanged) FROM $TableData WHERE $DataZoekterm like '$term'";
 		$result		= mysql_query($sql_tijd);
-		$row			= mysql_fetch_array($result);
+		$row			= mysqli_fetch_array($result);
 		
 		// Ik zoek dus uit wanneer er voor het laatst iets gewijzigd is.
 		// 2 maal dat verschil ten opzichte van nu is 'oud'
@@ -1016,10 +1016,10 @@ function getAds($term, $old) {
 		
 	$result	= mysql_query($sql);
 	
-	if($row = mysql_fetch_array($result)) {
+	if($row = mysqli_fetch_array($result)) {
 		do {
 			$Pages[] = $row[$DataMarktplaatsID];			
-		} while($row = mysql_fetch_array($result));
+		} while($row = mysqli_fetch_array($result));
 	}
 
 	return $Pages;
@@ -1049,7 +1049,7 @@ function cleanupLog() {
 	global $TableLog, $LogTijd, $OudeLogsTijd;
 	
 	$tijd		= time() - $OudeLogsTijd;
-	$db 		= connect_db();
+	$db 		= $db = connect_db();
 	$sql		= "DELETE FROM $TableLog WHERE $LogTijd < $tijd";
 		
 	if(mysql_query($sql)) {
@@ -1062,10 +1062,10 @@ function cleanupLog() {
 function getUserData($id) {
 	global $TableUsers, $UsersID, $UsersWachtwoord, $UsersNaam, $UsersMail, $UsersHTML, $UsersRSS, $UsersPostcode;
 	
-	$db 		= connect_db();
+	$db 		= $db = connect_db();
 	$sql		= "SELECT * FROM $TableUsers WHERE $UsersID = ". $id;
-	$result = mysql_query($sql);
-	$row		= mysql_fetch_array($result);
+	$result = mysqli_query($db, $sql);
+	$row		= mysqli_fetch_array($result);
 	
 	$data['naam']				= $row[$UsersNaam];
 	$data['wachtwoord']	= $row[$UsersWachtwoord];
@@ -1150,11 +1150,11 @@ function makeRSSFeed($term, $prefix) {
 function getPageData($id) {
 	global $TableData, $DataID, $DataMarktplaatsID, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataAfstand, $DataPrice;
 	
-	$db 		= connect_db();	
+	$db 		= $db = connect_db();	
 	$sql		= "SELECT * FROM $TableData WHERE $DataID = $id";
 	$result	= mysql_query($sql);
 	
-	if($row = mysql_fetch_array($result)) {
+	if($row = mysqli_fetch_array($result)) {
 		$PageData['ID'] = $row[$DataMarktplaatsID];
  		$PageData['URL'] = $row[$DataURL];
  		$PageData['title'] = $row[$DataTitle];
@@ -1174,11 +1174,11 @@ function getPageData($id) {
 function getPageDataByMarktplaatsID($id) {
 	global $TableData, $DataID, $DataMarktplaatsID, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataAfstand, $DataPrice;
 	
-	$db 		= connect_db();	
+	$db 		= $db = connect_db();	
 	$sql		= "SELECT * FROM $TableData WHERE $DataMarktplaatsID = $id";	
 	$result	= mysql_query($sql);
 	
-	if($row = mysql_fetch_array($result)) {
+	if($row = mysqli_fetch_array($result)) {
  		$PageData['URL'] = $row[$DataURL];
  		$PageData['title'] = $row[$DataTitle];
  		$PageData['beschrijving'] = $row[$DataBeschrijving];
@@ -1239,7 +1239,7 @@ function showBlock($String) {
 function getNotepadEntry($term, $marktplaats_id) {
 	global $TableNotepad, $NotepadUser, $NotepadTerm, $NotepadMID, $NotepadTijd, $NotepadBericht;
 	
-	$db 		= connect_db();
+	$db 		= $db = connect_db();
 	
 	if($marktplaats_id == 0) {
 		$sql 		= "SELECT * FROM $TableNotepad WHERE $NotepadTerm = $term GROUP BY $NotepadMID";
@@ -1248,14 +1248,14 @@ function getNotepadEntry($term, $marktplaats_id) {
 	}
 	$result	= mysql_query($sql);
 	
-	if($row = mysql_fetch_array($result)) {
+	if($row = mysqli_fetch_array($result)) {
 		$i = 0;
 		do {
 			$Output[$i]['id'] = $row[$NotepadMID];
 			$Output[$i]['tijd'] = $row[$NotepadTijd];
 			$Output[$i]['bericht'] = $row[$NotepadBericht];
 			$i++;			
-		} while($row = mysql_fetch_array($result));
+		} while($row = mysqli_fetch_array($result));
 	}
 	
 	return $Output;

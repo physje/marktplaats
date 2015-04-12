@@ -15,15 +15,16 @@
 /**************************************************************/
 
 // check login with Database
-connect_db();
+$db = connect_db();
 
 $sql		= "SELECT * FROM $TableUsers WHERE $UsersNaam like '$login' AND $UsersWachtwoord like '$password'";
-$result	= mysql_query($sql);
+//$result	= mysql_query($sql);
+$result	= mysqli_query($db, $sql);
 
 // check user and password
-if (mysql_num_rows($result) != 0) {
+if (mysqli_num_rows($result) != 0) {
 	// user exist --> continue
-	$row = mysql_fetch_array($result);
+	$row = mysqli_fetch_array($result);
 	$userLevel	= $row[$UsersLevel];
 	$UserID			= $row[$UsersID];
 	$PC					= $row[$UsersPostcode];
