@@ -405,9 +405,9 @@ function getMarktplaatsData_v3($string) {
 	$bezoeken			= getString('<div id="vip-ad-count">', 'x gezien', $data, 0);	
 	$DatumAll			= getString('sinds ', '</div>', $bezoeken[1], 0); 
 	$id						= getString('data-advertisement-id="', '"', $DatumAll[1], 0);
-	$verkoper_id	= getString('<a href="http://www.marktplaats.nl/verkopers/', '.html">', $data, 0); 
+	$verkoper_id	= getString('<a href="http://www.marktplaats.nl/verkopers/', '.html?', $data, 0); 
 	//$postcode			= getString("['ad.zipcode']='", "';", $data, 0); 
-	$verkoper			= getString('<h2 title="', '">', $verkoper_id[1], 0); 
+	$verkoper			= getString('<h2 class="name" title="', '">', $verkoper_id[1], 0); 
 	$omschrijving	= getString('<div id="vip-ad-description" class="wrapped">', '</div>', $id[1], 0); 
 		 
 	if(strpos($data, '<nobr><small>')) { 
@@ -770,7 +770,7 @@ function getGroepen($id) {
 function getZoekData($id) {
 	global $TableZoeken, $TableLichting, $ZoekenID, $ZoekenActive, $ZoekenUser, $ZoekenTerm, $ZoekenOr, $ZoekenNot, $ZoekenTitel, $ZoekenGroep, $ZoekenSubGroep, $ZoekenPrijsMin, $ZoekenPrijsMax, $ZoekenGeenPrijs, $ZoekenLokatie, $ZoekenPostcode, $ZoekenAfstand, $ZoekenProvincie, $ZoekenFoto, $ZoekenPayPal, $ZoekenKey, $LichtingTerm, $LichtingUur, $LichtingDag, $ZoekenCC, $ZoekenNaam, $ZoekenURL;
 	
-	$db	= $db = connect_db();
+	$db = connect_db();
 	$sql	= "SELECT * FROM $TableZoeken WHERE $ZoekenID = $id";	
 	$result = mysqli_query($db, $sql);
 	$row = mysqli_fetch_array($result);
@@ -798,7 +798,7 @@ function getZoekData($id) {
 	$data['URL']			= $row[$ZoekenURL];
 	
 	$sql		= "SELECT * FROM $TableLichting WHERE $LichtingTerm = $id";
-	$result	= mysql_query($sql);
+	$result = mysqli_query($db, $sql);
 	if($row = mysqli_fetch_array($result)) {
 		do {
 			$uur = $row[$LichtingUur];
@@ -988,7 +988,7 @@ function getNumberOfAds($term, $old) {
 		$sql	.= "AND $DataChanged < $tijd";
 	}
 	
-	$result	= mysql_query($sql);	
+	$result = mysqli_query($db, $sql);	
 	return mysqli_num_rows($result);
 }
 
