@@ -18,7 +18,7 @@
 $db = connect_db();
 
 $sql		= "SELECT * FROM $TableUsers WHERE $UsersNaam like '$login' AND $UsersWachtwoord like '$password'";
-//$result	= mysql_query($sql);
+//$result	= mysqli_query($db,$sql);
 $result	= mysqli_query($db, $sql);
 
 // check user and password
@@ -34,7 +34,7 @@ if (mysqli_num_rows($result) != 0) {
 	$_SESSION['PC']				= $PC;
 			
 	//$sql = "UPDATE $TableUsers SET $UsersLastLogin = '". time() ."' WHERE $UsersID = ". $row[$UsersID];
-	//mysql_query($sql);	
+	//mysqli_query($db,$sql);	
 } else {
 	// user not present in database
   $message = 'Ongeldige inloggegevens';

@@ -1,6 +1,6 @@
 <?php
 include ("../../general_include/general_config.php");
-include ("../../general_include/general_functions.php");
+include ("../../general_include/shared_functions.php");
 include ("../../general_include/class.phpmailer.php");
 include ("../../general_include/class.html2text.php");
 
@@ -23,7 +23,7 @@ if(isset($_POST['opvragen'])) {
 		$nieuwPassword = generatePassword(12);
 		
 		$sql		= "UPDATE $TableUsers SET $UsersWachtwoord = '". md5($nieuwPassword) ."' WHERE $UsersID = $id";
-		mysql_query($sql);
+		mysqli_query($db,$sql);
 		
 		$data = getUserData($id);
 		

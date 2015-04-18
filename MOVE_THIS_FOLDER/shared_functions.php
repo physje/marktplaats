@@ -1,4 +1,5 @@
 <?php
+/*
 function connect_db() {
 	global $dbHostname, $dbUsername, $dbPassword, $dbName;
 	
@@ -6,8 +7,17 @@ function connect_db() {
 	@mysql_select_db( "$dbName", $db) or select_db(); 
 	return $db;
 }
+*/
 
+function connect_db() {
+	global $dbHostname, $dbUsername, $dbPassword, $dbName;
+	
+	$link = mysqli_connect($dbHostname, $dbUsername, $dbPassword, $dbName) or die("Error " . mysqli_error($link));
+	
+	return $link;
+}
 
+/*
 function connect_error() {
 	echo "There went something wrong";
 	die;
@@ -18,6 +28,7 @@ function select_db() {
 	echo "Cannot reach the database";
 	die;
 }
+*/
 
 function getString($start, $end, $string, $offset) {
 	if ($start != '') {
@@ -60,6 +71,30 @@ function getCoordinates($straat, $postcode, $plaats, $land = 'Nederland') {
 		return array(0, 0, 0, 0, '');
 	}
 }
+
+//function getCoordinates($straat, $postcode, $plaats) {
+//	$API	= "";
+//	$q		= urlencode($straat) .",+". urlencode($postcode) ."+". urlencode($plaats) .",+Nederland";
+//	$url	= "http://maps.google.com/maps/geo?q=$q&output=xml&key=$API";
+//	$contents	= file_get_contents($url);
+//	
+//	$code		= getString('<code>', '</code>', $contents, 0);
+//	
+//	if($code[0] == 200) {
+//		$Accuracy			= getString('AddressDetails Accuracy="', '"', $contents, 0);
+//		$coordString	= getString('<coordinates>', '</coordinates>', $contents, 0);
+//		$PC						= getString('<PostalCodeNumber>', '</PostalCodeNumber>', $contents, 0);
+//		$coordArray		= explode(',', $coordString[0]);
+//		$lat					= $coordArray[1];
+//		$lon					= $coordArray[0];
+//		$latitude			= explode('.', $lat);
+//		$longitude		= explode('.', $lon);
+//
+//		return array($latitude[0], $latitude[1], $longitude[0], $longitude[1], $Accuracy[0], $PC[0]);
+//	} else {
+//		return array(0, 0, 0, 0, 0, 0);
+//	}
+//}
 
 function getDistance($coord1, $coord2) {
 	//http://www.postcode.nl/index.php?PageID=151
@@ -188,6 +223,50 @@ function ago($datefrom,$dateto=-1) {
 		   
 	}
 	return $res;
+}
+
+function generatePassword ($length = 8) {
+	// start with a blank password
+	$password = "";
+	$possible = "";
+	
+	// define possible characters - any character in this string can be
+	// picked for use in the password, so if you want to put vowels back in
+  // or add special characters such as exclamation marks, this is where
+  // you should do it
+  //$possible = "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&";
+  $possible .= "1234567890";
+  $possible .= "bcdfghjkmnpqrtvwxyz";
+  $possible .= "BCDFGHJKLMNPQRTVWXYZ";
+  $possible .= "!#$%&";
+  
+  // we refer to the length of $possible a few times, so let's grab it now
+  $maxlength = strlen($possible);
+  
+  // check for length overflow and truncate if necessary
+  if ($length > $maxlength) {
+  	$length = $maxlength;
+  }
+  
+  // set up a counter for how many characters are in the password so far
+  $i = 0;
+  
+  // add random characters to $password until $length is reached
+  while ($i < $length) { 
+  	// pick a random character from the possible ones
+  	$char = substr($possible, mt_rand(0, $maxlength-1), 1);
+  	
+  	// have we already used this character in $password?
+  	if (!strstr($password, $char)) {
+  		// no, so it's OK to add it onto the end of whatever we've already got...
+  		$password .= $char;
+      // ... and increase the counter by one
+      $i++;
+    }
+  }
+  
+  // done!
+  return $password;
 }
 
 

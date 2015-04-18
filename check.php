@@ -14,7 +14,7 @@
 //*********************************************************************
 
 include ("../general_include/general_config.php");
-include ("../general_include/general_functions.php");
+include ("../general_include/shared_functions.php");
 include ("../general_include/class.phpmailer.php");
 
 include ("include/inc_config_general.php");

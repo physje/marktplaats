@@ -14,7 +14,7 @@
 //*********************************************************************
 
 include ("../../general_include/general_config.php");
-include ("../../general_include/general_functions.php");
+include ("../../general_include/shared_functions.php");
 include ("../include/inc_config_general.php");
 include ("../lng/language_$Language.php");
 include ("../include/inc_functions.php");
@@ -29,7 +29,7 @@ if(isset($_REQUEST['toevoegen'])) { $toevoegen = $_REQUEST['toevoegen']; }
 if(isset($_REQUEST['opslaan'])) {
 	$db 		= $db = connect_db();
 	$sql = "INSERT INTO $TableNotepad ($NotepadUser, $NotepadTerm, $NotepadMID, $NotepadTijd, $NotepadBericht) VALUES (". $_SESSION["UserID"] .", ". $_REQUEST['term'] .", ". $_REQUEST['id'] .", ". time() .", '". urlencode($_REQUEST['krabbel']) ."')";
-	if(!mysql_query($sql)) {
+	if(!mysqli_query($db,$sql)) {
 		echo "Foutje [$sql]";
 	}
 }

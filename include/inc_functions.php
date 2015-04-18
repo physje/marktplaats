@@ -135,7 +135,7 @@ function getURL($id) {
 		$postcode = $row[$ZoekenPostcode];
 	} else {
 		$sql_user			= "SELECT * FROM $TableUsers WHERE $UsersID = ". $row[$ZoekenUser];
-		$result_user	= mysql_query($sql_user);
+		$result_user	= mysqli_query($db,$sql_user);
 		$row_user			= mysqli_fetch_array($result_user);
 		$postcode			= $row_user[$UsersPostcode];
 	}
@@ -536,7 +536,7 @@ function AddData($data, $term) {
 	$db 	= $db = connect_db();
 	$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged) VALUES (". $data['id'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."' ,'". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."', '". $data['afstand'] ."',	$term, $tijd, $tijd)";
 	
-	if(mysql_query($sql)) {
+	if(mysqli_query($db,$sql)) {
 		writeToLog($term, "Toegevoegd", $data['id']);
 	} else {
 		writeToLog($term, "Fout met toevoegen", $data['id']);
@@ -553,7 +553,7 @@ function UpdateData($id, $term) {
 	$db 	= $db = connect_db();
 	$sql	= "UPDATE $TableData SET $DataChanged = $tijd, $DataActive = '1' WHERE $DataMarktplaatsID = '$id'";
 	
-	if(mysql_query($sql)) {
+	if(mysqli_query($db,$sql)) {
 		writeToLog($term, "Geupdate", $id);
 	} else {
 		writeToLog($term, "Fout met updaten", $id);
@@ -570,10 +570,10 @@ function changeData($data, $term) {
 	$db = connect_db();	
 	
 	$sql	= "DELETE FROM $TableData WHERE $DataMarktplaatsID = '$id'";	
-	if(mysql_query($sql)) {
+	if(mysqli_query($db,$sql)) {
 		$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged) VALUES (". $data['id'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."' ,'". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."', '". $data['afstand'] ."',	$term, $tijd, $tijd)";
 	
-		if(mysql_query($sql)) {
+		if(mysqli_query($db,$sql)) {
 			writeToLog($term, "Gewijzigd", $data['id']);
 		} else {
 			writeToLog($term, "Fout met wijzigen", $data['id']);
@@ -591,7 +591,7 @@ function deleteURL($term) {
 	$sql = "DELETE FROM $TableZoeken WHERE $ZoekenID = '$term'";
 	$sql_lichting = "DELETE FROM $TableLichting WHERE $LichtingTerm = $term";
 				
-	if(mysql_query($sql) AND mysql_query($sql_lichting)) {
+	if(mysqli_query($db,$sql) AND mysqli_query($db,$sql_lichting)) {
 		writeToLog($term, "URL verwijderd", '');
 	} else {
 		writeToLog($term, "Fout met verwijderen URL", '');
@@ -603,7 +603,7 @@ function deleteData($term) {
 	$db	= $db = connect_db();	
 	$sql = "DELETE FROM $TableData WHERE $DataZoekterm = '$term'";
 		
-	if(mysql_query($sql)) {
+	if(mysqli_query($db,$sql)) {
 		writeToLog($term, "Data verwijderd", '');
 	} else {
 		writeToLog($term, "Fout met verwijderen data", '');
@@ -825,20 +825,20 @@ function getZoekData($id) {
 //		$sql = "UPDATE $TableZoeken SET $ZoekenActive = '$active', $ZoekenUser = '$user', $ZoekenTerm = '$q', $ZoekenOr = '$or' , $ZoekenNot = '$not', $ZoekenTitel = '$ts', $ZoekenGroep = '$g', $ZoekenSubGroep = '$u', $ZoekenPrijsMin = '$pmin', $ZoekenPrijsMax = '$pmax', $ZoekenGeenPrijs = '$np', $ZoekenLokatie = '$loc_type', $ZoekenPostcode = '$postcode', $ZoekenAfstand = '$distance', $ZoekenProvincie = '$pv', $ZoekenFoto = '$f', $ZoekenCC = '$CC', $ZoekenNaam = '$naam'	WHERE $ZoekenID = '$id'";
 //	}
 //	
-//	if(!mysql_query($sql)) {
+//	if(!mysqli_query($db,$sql)) {
 //		echo "[$sql]";
 //	} elseif($id == '') {
 //		$id = mysql_insert_id();
 //	}
 //		
 //	$sql_lichting = "DELETE FROM $TableLichting WHERE $LichtingTerm = $id";
-//	mysql_query($sql_lichting);
+//	mysqli_query($db,$sql_lichting);
 //		
 //	foreach($dag as $d_key => $d_waarde) {
 //		foreach($uur as $u_key => $u_waarde) {
 //			if($d_waarde == 1 AND $u_waarde == 1) {
 //				$sql_lichting = "INSERT INTO $TableLichting ($LichtingDag, $LichtingUur, $LichtingTerm) VALUES ($d_key, $u_key, $id)";
-//				mysql_query($sql_lichting);
+//				mysqli_query($db,$sql_lichting);
 //			}
 //		}
 //	}	
@@ -855,20 +855,20 @@ function saveURL($id, $user, $active, $url, $CC, $naam, $dag, $uur) {
 		$sql = "UPDATE $TableZoeken SET $ZoekenActive = '$active', $ZoekenUser = '$user', $ZoekenCC = '$CC', $ZoekenURL = '$url', $ZoekenNaam = '$naam' WHERE $ZoekenID = '$id'";
 	}	
 	
-	if(!mysql_query($sql)) {
+	if(!mysqli_query($db,$sql)) {
 		echo "[$sql]";
 	} elseif($id == '') {
 		$id = mysql_insert_id();
 	}
 		
 	$sql_lichting = "DELETE FROM $TableLichting WHERE $LichtingTerm = $id";
-	mysql_query($sql_lichting);
+	mysqli_query($db,$sql_lichting);
 		
 	foreach($dag as $d_key => $d_waarde) {
 		foreach($uur as $u_key => $u_waarde) {
 			if($d_waarde == 1 AND $u_waarde == 1) {
 				$sql_lichting = "INSERT INTO $TableLichting ($LichtingDag, $LichtingUur, $LichtingTerm) VALUES ($d_key, $u_key, $id)";
-				mysql_query($sql_lichting);
+				mysqli_query($db,$sql_lichting);
 			}
 		}
 	}	
@@ -915,7 +915,7 @@ function deletePage($term, $id) {
 	$db 		= $db = connect_db();
 	$sql		= "DELETE FROM $TableData WHERE $DataMarktplaatsID = '$id'";
 	
-	if(mysql_query($sql)) {
+	if(mysqli_query($db,$sql)) {
 		writeToLog($term, "Verwijderd", $id);
 	} else {
 		writeToLog($term, "Fout met verwijderen", $id);
@@ -927,7 +927,7 @@ function deletePage($term, $id) {
 	if(mysqli_num_rows($result) > 0) {		
 		$sql = "INSERT INTO $TableNotepad ($NotepadTerm, $NotepadMID, $NotepadTijd, $NotepadBericht) VALUES ($term, $id, ". time() .", '". urlencode('Advertentie bestaat niet meer') ."')";
 			
-		if(mysql_query($sql)) {
+		if(mysqli_query($db,$sql)) {
 			writeToLog($term, "Kladblok geupdate", $id);
 		} else {
 			writeToLog($term, "Fout met updaten van kladblok", $id);
@@ -942,7 +942,7 @@ function writeToLog($term, $string, $id = '') {
 	$db 		= $db = connect_db();
 	$sql		= "INSERT INTO $TableLog ($LogTijd, $LogIP, $LogTerm, $LogMarktplaatsID, $LogLog) VALUES ('$tijd', '$_SERVER[REMOTE_ADDR]', '$term', '$id', '$string');";
 		
-	if(!mysql_query($sql)) {
+	if(!mysqli_query($db,$sql)) {
 		echo "LOG-ERROR met [ $sql ]";
 	}
 }
@@ -956,7 +956,7 @@ function getLogData($begin, $eind, $id, $term, $aantal) {
 	if($term != '')										{	$where[]	= "$LogTerm = '$term'"; }
 	
 	$sql		= "SELECT * FROM $TableLog WHERE " . implode(' AND ', $where) ." ORDER BY $LogTijd DESC LIMIT 0, $aantal;";
-	$result	= mysql_query($sql);
+	$result	= mysqli_query($db,$sql);
 
 	if($row = mysqli_fetch_array($result))
 	{
@@ -1002,7 +1002,7 @@ function getAds($term, $old) {
 	
 	if($old) {
 		$sql_tijd	= "SELECT max($DataChanged) FROM $TableData WHERE $DataZoekterm like '$term'";
-		$result		= mysql_query($sql_tijd);
+		$result		= mysqli_query($db,$sql_tijd);
 		$row			= mysqli_fetch_array($result);
 		
 		// Ik zoek dus uit wanneer er voor het laatst iets gewijzigd is.
@@ -1014,7 +1014,7 @@ function getAds($term, $old) {
 		$sql	 	= "SELECT * FROM $TableData WHERE $DataZoekterm like '$term'";
 	}
 		
-	$result	= mysql_query($sql);
+	$result	= mysqli_query($db,$sql);
 	
 	if($row = mysqli_fetch_array($result)) {
 		do {
@@ -1052,7 +1052,7 @@ function cleanupLog() {
 	$db 		= $db = connect_db();
 	$sql		= "DELETE FROM $TableLog WHERE $LogTijd < $tijd";
 		
-	if(mysql_query($sql)) {
+	if(mysqli_query($db,$sql)) {
 		writeToLog('', "Oude logs verwijderd", '');
 	} else {
 		writeToLog('', "Fout met verwijderen oude logs", '');
@@ -1152,7 +1152,7 @@ function getPageData($id) {
 	
 	$db 		= $db = connect_db();	
 	$sql		= "SELECT * FROM $TableData WHERE $DataID = $id";
-	$result	= mysql_query($sql);
+	$result	= mysqli_query($db,$sql);
 	
 	if($row = mysqli_fetch_array($result)) {
 		$PageData['ID'] = $row[$DataMarktplaatsID];
@@ -1176,7 +1176,7 @@ function getPageDataByMarktplaatsID($id) {
 	
 	$db 		= $db = connect_db();	
 	$sql		= "SELECT * FROM $TableData WHERE $DataMarktplaatsID = $id";	
-	$result	= mysql_query($sql);
+	$result	= mysqli_query($db,$sql);
 	
 	if($row = mysqli_fetch_array($result)) {
  		$PageData['URL'] = $row[$DataURL];
@@ -1246,7 +1246,7 @@ function getNotepadEntry($term, $marktplaats_id) {
 	} else {
 		$sql 		= "SELECT * FROM $TableNotepad WHERE $NotepadMID = $marktplaats_id";
 	}
-	$result	= mysql_query($sql);
+	$result	= mysqli_query($db,$sql);
 	
 	if($row = mysqli_fetch_array($result)) {
 		$i = 0;

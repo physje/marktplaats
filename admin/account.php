@@ -14,7 +14,7 @@
 //*********************************************************************
 
 include ("../../general_include/general_config.php");
-include ("../../general_include/general_functions.php");
+include ("../../general_include/shared_functions.php");
 include ("../include/inc_config_general.php");
 include ("../lng/language_$Language.php");
 include ("../include/inc_functions.php");
@@ -28,7 +28,7 @@ if($_POST['opslaan']) {
 	
 	if($_POST['new'] AND $_SESSION['level'] > 1) {
 		$sql		= "INSERT INTO $TableUsers ($UsersNaam, $UsersWachtwoord, $UsersMail, $UsersHTML, $UsersRSS, $UsersPostcode) VALUES ('". $_POST[naam] ."', '". md5($_POST[wachtwoord]) ."', '". $_POST[mail] ."', '". $_POST[type] ."', '". $_POST[rss] ."', '". $_POST[pc] ."')";
-		if(mysql_query($sql)) {	echo $_POST[naam] . ' '. $strEditAdded;}
+		if(mysqli_query($db,$sql)) {	echo $_POST[naam] . ' '. $strEditAdded;}
 	} else {		
 		$sql		= "UPDATE $TableUsers SET ";
 		$sql		.= "$UsersNaam = '". $_POST[naam] ."', ";		
@@ -41,7 +41,7 @@ if($_POST['opslaan']) {
 		$sql		.= "$UsersPostcode = '". $_POST[pc] ."' ";
 		$sql		.= "WHERE $UsersID = ". $_SESSION['UserID'] .";";
 		
-		if(mysql_query($sql)) {	echo $_POST[naam] . ' '. $strEditChanged; }
+		if(mysqli_query($db,$sql)) {	echo $_POST[naam] . ' '. $strEditChanged; }
 	}	
 } else {	
 	echo "<form method='post' action='$_SERVER[PHP_SELF]'>\n";
