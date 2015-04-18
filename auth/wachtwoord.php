@@ -23,7 +23,7 @@ if(isset($_POST['opvragen'])) {
 		$nieuwPassword = generatePassword(12);
 		
 		$sql		= "UPDATE $TableUsers SET $UsersWachtwoord = '". md5($nieuwPassword) ."' WHERE $UsersID = $id";
-		mysqli_query($db, $sql);
+		mysql_query($sql);
 		
 		$data = getUserData($id);
 		
