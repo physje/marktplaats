@@ -405,7 +405,7 @@ function getMarktplaatsData_v3($string) {
 	$bezoeken			= getString('<span id="view-count">', '</span>', $data, 0);	
 	$DatumAll			= getString('sinds ', '</div>', $bezoeken[1], 0); 
 	$id						= getString('data-advertisement-id="', '"', $DatumAll[1], 0);
-	$verkoper_id	= getString('<a href="http://www.marktplaats.nl/verkopers/', '.html?', $data, 0); 
+	$verkoper_id	= getString('<a href="http://www.marktplaats.nl/verkopers/', '.html', $data, 0); 
 	//$postcode			= getString("['ad.zipcode']='", "';", $data, 0); 
 	$verkoper			= getString('<h2 class="name" title="', '">', $verkoper_id[1], 0); 
 	$omschrijving	= getString('<div id="vip-ad-description" class="wrapped">', '</div>', $id[1], 0); 
