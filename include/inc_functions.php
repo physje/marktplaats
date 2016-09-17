@@ -394,7 +394,7 @@ function getMarktplaatsData_v3($string) {
 	$title				= getString('" title="', '"', $url[1], 0);
 	$beschrijving	= getString('<span class="mp-listing-description wrapped">', '</span>', $title[1], 0); 
 	//$prijs				= getString('<span class="price">', '</span>', $beschrijving[1], 0); 
-	$prijs				= getString('<div class="price-new ellipsis">', '</div>', $beschrijving[1], 0); 
+	$prijs				= getString('<span class="price-new ellipsis">', '</span>', $beschrijving[1], 0); 
 	//$datum				= getString('<td class="column-date">', '</td>', $prijs[1], 0);
 	$datum				= getString('<div class="date">', '</div>', $prijs[1], 0);
 	$plaats				= getString(' <div class="location-name">', ',', $datum[1], 0);
@@ -1293,4 +1293,21 @@ function proper_parse_str($str) {
   return $arr;
 }
 
+function send2Pushover($dataArray) {
+	global $PushoverKey, $PushoverToken;
+	
+	if($PushoverKey != '' AND $PushoverToken != '') {
+		$push = new Pushover();
+		$push->setUser($PushoverKey);
+		$push->setToken($PushoverToken);			
+		$push->setTitle($dataArray['title']);
+		$push->setMessage($dataArray['message']);
+		if($dataArray['url'] != '')				$push->setUrl($dataArray['url']);
+		if($dataArray['urlTitle'] != '')	$push->setUrlTitle($dataArray['urlTitle']);
+		$push->setHtml(1);
+		$push->setDebug(true);
+		$push->setTimestamp(time());
+		$push->send();		
+	}
+}
 ?>
