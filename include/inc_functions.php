@@ -652,7 +652,7 @@ function isActive($id) {
 	$sql		= "SELECT * FROM $TableZoeken WHERE $ZoekenID = $id";	
 	$result = mysqli_query($db, $sql);
 	$row		= mysqli_fetch_array($result);
-	
+			
 	if($row[$ZoekenActive] == 1) {
 		return true;
 	} else {
@@ -783,7 +783,7 @@ function getAds($term, $old) {
 	} else {
 		$sql	 	= "SELECT * FROM $TableData WHERE $DataZoekterm like '$term'";
 	}
-		
+			
 	$result	= mysqli_query($db,$sql);
 	
 	if($row = mysqli_fetch_array($result)) {
@@ -901,6 +901,8 @@ function getPageData($id) {
 	$sql		= "SELECT * FROM $TableData WHERE $DataID = $id";
 	$result	= mysqli_query($db,$sql);
 	
+	echo $sql;
+	
 	if($row = mysqli_fetch_array($result)) {
 		$PageData['ID'] = $row[$DataMarktplaatsID];
  		$PageData['URL'] = $row[$DataURL];
@@ -919,14 +921,16 @@ function getPageData($id) {
 }
 
 function getPageDataByMarktplaatsID($id) {
-	global $TableData, $DataID, $DataMarktplaatsID, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataAfstand, $DataPrice;
+	global $TableData, $DataID, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataAfstand, $DataPrice;
 	
 	$db 		= $db = connect_db();	
 	$sql		= "SELECT * FROM $TableData WHERE $DataMarktplaatsID = $id";	
 	$result	= mysqli_query($db,$sql);
-	
+		
 	if($row = mysqli_fetch_array($result)) {
+ 		$PageData['ID'] = $row[$DataID];
  		$PageData['URL'] = $row[$DataURL];
+ 		$PageData['active'] = $row[$DataActive];
  		$PageData['title'] = $row[$DataTitle];
  		$PageData['beschrijving'] = $row[$DataBeschrijving];
  		$PageData['verkoper'] = $row[$DataVerkoper];
@@ -935,7 +939,7 @@ function getPageDataByMarktplaatsID($id) {
  		$PageData['changed'] = $row[$DataChanged]; 		
  		$PageData['picture'] = $row[$DataPlaatje];
  		$PageData['afstand'] = $row[$DataAfstand];
- 		$PageData['prijs'] = $row[$DataPrice]; 		
+ 		$PageData['prijs'] = $row[$DataPrice];
 	}
 	
 	return $PageData;
