@@ -781,7 +781,7 @@ function getAds($term, $old) {
 		$sql	 	= "SELECT * FROM $TableData WHERE $DataZoekterm like '$term' AND $DataChanged < $tijd";
 		writeToLog($term, 'Advertenties van voor '. date("d-m H:i", $tijd));
 	} else {
-		$sql	 	= "SELECT * FROM $TableData WHERE $DataZoekterm like '$term'";
+		$sql	 	= "SELECT * FROM $TableData WHERE $DataZoekterm like '$term' ORDER BY $DataChanged ASC";
 	}
 			
 	$result	= mysqli_query($db,$sql);
