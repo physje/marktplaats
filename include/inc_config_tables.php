@@ -72,11 +72,11 @@ $NotepadMID 			= 'marktplaats_id';
 $NotepadTijd 			= 'tijd';
 $NotepadBericht		= 'bericht';
 
-$TableCoord			= $dbTablePrefix.'notepad';
-$CoordID 				= 'id';
-$CoordPlaats		= 'plaats';
-$CoordLongitude	= 'longitude';
-$CoordLatitude	= 'latitude';
+$TableCoord				= $dbTablePrefix.'coord';
+$CoordID 					= 'id';
+$CoordPlaats			= 'plaats';
+$CoordLongitude		= 'longitude';
+$CoordLatitude		= 'latitude';
 
 $ScriptDownload   = "https://github.com/physje/marktplaats";
 $ScriptTitle      = "Marktplaats Checker";

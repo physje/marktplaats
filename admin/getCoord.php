@@ -20,7 +20,20 @@ include ("../lng/language_$Language.php");
 include ("../include/inc_functions.php");
 include ("../include/inc_head.php");
 
-$sql = "";
+$sql = "SELECT $DataPlaats FROM $TableData WHERE $DataPlaats NOT IN (SELECT $CoordPlaats FROM $TableCoord) LIMIT 0,1";
+$result = mysqli_query($db, $sql);
+
+if($row = mysqli_fetch_array($result)) {
+	do {
+		$plaats = $row[$DataPlaats];
+		
+		$coord = getCoordinates('', '', $plaats);
+		//array($latitude[0], $latitude[1], $longitude[0], $longitude[1], $location_type[0]);
+		
+		echo $plaats .' -> '. $coord[4];
+		
+	} while($row = mysqli_fetch_array($result));
+}
 
 include ('../include/inc_footer.php');
 ?>
