@@ -298,16 +298,16 @@ function changedPrice($data, $term) {
 */
 
 function makeAdsInactive($term) {
-	global $TableData, $DataZoekterm, $DataActive;
+	global $TableData, $DataZoekterm, $DataActive, $DataNotSeen;
 	
 	$db			= $db = connect_db();
-	$sql = "UPDATE $TableData SET $DataActive = 0 WHERE $DataZoekterm = $term";
+	$sql = "UPDATE $TableData SET $DataActive = '0', $DataNotSeen = $DataNotSeen + 1 WHERE $DataZoekterm = $term";
 	$result = mysqli_query($db, $sql);	
 }
 
 
 function AddUpdateData($data, $term, $status) {
-	global $TableData, $DataMarktplaatsID, $DataZoekterm;
+	global $TableData, $DataMarktplaatsID, $DataPlaats;
 	
 	$newItem = $status['new'];
 	$changedTitle = $status['title'];
@@ -322,17 +322,23 @@ function AddUpdateData($data, $term, $status) {
 	} else {
 		# UPDATE tijd
 		UpdateData($data['id'], $term);
+		
+		# tijdelijk even zo
+		$db 	= connect_db();
+		
+		$sql	= "UPDATE $TableData SET $DataPlaats = '". urlencode($data['plaats']) ."' WHERE $DataMarktplaatsID = ". $data['id'];
+		mysqli_query($db,$sql);
 	}
 }
 
 
 function AddData($data, $term) {
-	global $TableData, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataZoekterm, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataPrice, $DataAfstand;
+	global $TableData, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataZoekterm, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataPrice, $DataPlaats, $DataAfstand;
 	
 	$tijd	= time();
 	
-	$db 	= $db = connect_db();
-	$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged) VALUES (". $data['id'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."' ,'". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."', '". $data['afstand'] ."',	$term, $tijd, $tijd)";
+	$db 	= connect_db();
+	$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataPlaats, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged) VALUES (". $data['id'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."' ,'". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."','". urlencode($data['plaats']) ."', '". $data['afstand'] ."',	$term, $tijd, $tijd)";
 	
 	if(mysqli_query($db,$sql)) {
 		writeToLog($term, "Toegevoegd", $data['id']);
@@ -344,12 +350,12 @@ function AddData($data, $term) {
 
 
 function UpdateData($id, $term) {
-	global $TableData, $DataMarktplaatsID, $DataChanged, $DataActive;
+	global $TableData, $DataMarktplaatsID, $DataChanged, $DataActive, $DataNotSeen;
 	
 	$tijd	= time();
 	
 	$db 	= $db = connect_db();
-	$sql	= "UPDATE $TableData SET $DataChanged = $tijd, $DataActive = '1' WHERE $DataMarktplaatsID = '$id'";
+	$sql	= "UPDATE $TableData SET $DataChanged = $tijd, $DataActive = '1', $DataNotSeen = '0' WHERE $DataMarktplaatsID = '$id'";
 	
 	if(mysqli_query($db,$sql)) {
 		writeToLog($term, "Geupdate", $id);
@@ -360,25 +366,19 @@ function UpdateData($id, $term) {
 
 
 function changeData($data, $term) {
-	global $TableData, $DataActive, $DataMarktplaatsID, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataZoekterm, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataPrice, $DataAfstand;
+	global $TableData, $DataActive, $DataMarktplaatsID, $DataTitle, $DataZoekterm, $DataChanged, $DataPrice, $DataPlaats;
 
-	$id = $data['id'];	
 	$tijd	= time();
 	
 	$db = connect_db();	
-	
-	$sql	= "DELETE FROM $TableData WHERE $DataMarktplaatsID = '$id'";	
+	$sql	= "UPDATE $TableData SET $DataActive = '1', $DataTitle = '". urlencode($data['title']) ."', $DataPlaats = '". urlencode($data['plaats']) ."', $DataPrice = '". $data['price'] ."', $DataChanged = $tijd, $DataNotSeen = '0'	WHERE $DataMarktplaatsID = ". $data['id'];
+		
 	if(mysqli_query($db,$sql)) {
-		$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged) VALUES (". $data['id'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."' ,'". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."', '". $data['afstand'] ."',	$term, $tijd, $tijd)";
-	
-		if(mysqli_query($db,$sql)) {
-			writeToLog($term, "Gewijzigd", $data['id']);
-		} else {
-			writeToLog($term, "Fout met wijzigen", $data['id']);
-			echo $sql ."<br>\n";
-		}
-	}
-	
+		writeToLog($term, "Gewijzigd", $data['id']);
+	} else {
+		writeToLog($term, "Fout met wijzigen", $data['id']);
+		echo $sql ."<br>\n";
+	}	
 }
 
 
@@ -764,13 +764,15 @@ function getNumberOfAds($term, $old) {
 
 
 function getAds($term, $old) {
-	global $TableData, $DataMarktplaatsID, $DataZoekterm, $DataChanged, $OudeAdvTijd;
+	//global $TableData, $DataMarktplaatsID, $DataZoekterm, $DataChanged, $OudeAdvTijd;
+	global $TableData, $DataMarktplaatsID, $DataZoekterm, $DataNotSeen;
 	
 	$Pages	= array();
 		
-	$db 		= $db = connect_db();	
+	$db = connect_db();	
 	
 	if($old) {
+		/*
 		$sql_tijd	= "SELECT max($DataChanged) FROM $TableData WHERE $DataZoekterm like '$term'";
 		$result		= mysqli_query($db,$sql_tijd);
 		$row			= mysqli_fetch_array($result);
@@ -779,7 +781,9 @@ function getAds($term, $old) {
 		// 2 maal dat verschil ten opzichte van nu is 'oud'
 		$tijd 	= time() - (2*(time() - $row[0]));
 		$sql	 	= "SELECT * FROM $TableData WHERE $DataZoekterm like '$term' AND $DataChanged < $tijd";
-		writeToLog($term, 'Advertenties van voor '. date("d-m H:i", $tijd));
+		*/
+		$sql	 	= "SELECT * FROM $TableData WHERE $DataZoekterm like '$term' AND $DataNotSeen > 5";
+		writeToLog($term, 'Advertenties die 5 keer niet gezien zijn');
 	} else {
 		$sql	 	= "SELECT * FROM $TableData WHERE $DataZoekterm like '$term' ORDER BY $DataChanged ASC";
 	}
@@ -900,9 +904,7 @@ function getPageData($id) {
 	$db 		= $db = connect_db();	
 	$sql		= "SELECT * FROM $TableData WHERE $DataID = $id";
 	$result	= mysqli_query($db,$sql);
-	
-	echo $sql;
-	
+			
 	if($row = mysqli_fetch_array($result)) {
 		$PageData['ID'] = $row[$DataMarktplaatsID];
  		$PageData['URL'] = $row[$DataURL];

@@ -265,7 +265,6 @@ if($Checken) {
       $teller_p++;
       
       if($debug == 1) {
-       echo $teller_p .' ';
        if($newItem) {
         echo "'". $data['title'] ."' is nieuw : ". strftime("%a %e %b %H:%M", $data['date']) .'<br>';
        } elseif($changedTitle) {
