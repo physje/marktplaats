@@ -72,6 +72,12 @@ $NotepadMID 			= 'marktplaats_id';
 $NotepadTijd 			= 'tijd';
 $NotepadBericht		= 'bericht';
 
+$TableCoord			= $dbTablePrefix.'notepad';
+$CoordID 				= 'id';
+$CoordPlaats		= 'plaats';
+$CoordLongitude	= 'longitude';
+$CoordLatitude	= 'latitude';
+
 $ScriptDownload   = "https://github.com/physje/marktplaats";
 $ScriptTitle      = "Marktplaats Checker";
 $ScriptDescr	  	= "Marktplaats Checker is a script which checks the site marktplaats.nl. Every time the script is running it checks marktplaats.nl for new items you are looking for. If there are, you will get a mail notification.";    // nog toevoegen in inc_install
