@@ -20,17 +20,28 @@ include ("../lng/language_$Language.php");
 include ("../include/inc_functions.php");
 include ("../include/inc_head.php");
 
-$sql = "SELECT $DataPlaats FROM $TableData WHERE $DataPlaats NOT IN (SELECT $CoordPlaats FROM $TableCoord) LIMIT 0,1";
+$db = connect_db();
+
+$sql = "SELECT * FROM $TableData WHERE $DataPlaats NOT LIKE '' AND $DataPlaats NOT IN (SELECT $CoordPlaats FROM $TableCoord) LIMIT 0,1";
 $result = mysqli_query($db, $sql);
 
 if($row = mysqli_fetch_array($result)) {
 	do {
-		$plaats = $row[$DataPlaats];
-		
+		$plaats = urldecode($row[$DataPlaats]);
 		$coord = getCoordinates('', '', $plaats);
-		//array($latitude[0], $latitude[1], $longitude[0], $longitude[1], $location_type[0]);
 		
-		echo $plaats .' -> '. $coord[4];
+		echo $plaats .' -> ';
+		
+		if($coord[0] > 0) {
+		    $sql_INSERT = "INSERT INTO $TableCoord ($CoordPlaats, $CoordLongitude, $CoordLatitude) VALUES ('". urlencode($plaats) ."', '". $coord[0].'.'.$coord[1] ."', '". $coord[2].'.'.$coord[3] ."')";
+		    mysqli_query($db, $sql_INSERT);
+		    
+		    echo 'toegevoegd';
+		} else {
+		  echo 'foutieve coordinaten';  
+		}
+		
+		//. $coord[0].'.'.$coord[1] .'|'. $coord[2].'.'.$coord[3];
 		
 	} while($row = mysqli_fetch_array($result));
 }
