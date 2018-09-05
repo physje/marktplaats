@@ -64,6 +64,8 @@ foreach($Termen as $term) {
 	echo "	<td>&nbsp;</td>\n";
 	echo "	<td><a href='makeRSS.php?forcedID=$term'><img src='../images/rss_refresh.gif' border='0' height=16></a></td>\n";
 	echo "	<td>&nbsp;</td>\n";
+	echo "	<td><a href='GoogleMaps.php?term=$term'><img src='../images/maps.png' border='0' height=16></a></td>\n";
+	echo "	<td>&nbsp;</td>\n";
 	
 	echo "</tr>\n";
 }

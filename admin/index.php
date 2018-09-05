@@ -44,6 +44,8 @@ if($_SESSION['level'] > 1) {
 	echo "<p>\n";
 	echo "<a href='verdeling.php'>[Bekijk de verdeling]</a>\n";
 	echo "<p>\n";
+	echo "<a href='getCoord.php'>[Haal coördinaten op]</a>\n";
+	echo "<p>\n";
 }
 
 echo "<a href='notepad.php'>Kladblok</a>\n";

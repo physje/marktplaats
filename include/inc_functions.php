@@ -301,8 +301,11 @@ function makeAdsInactive($term) {
 	global $TableData, $DataZoekterm, $DataActive, $DataNotSeen;
 	
 	$db			= $db = connect_db();
-	$sql = "UPDATE $TableData SET $DataActive = '0', $DataNotSeen = $DataNotSeen + 1 WHERE $DataZoekterm = $term";
-	$result = mysqli_query($db, $sql);	
+	$sql = "UPDATE $TableData SET $DataNotSeen = $DataNotSeen + 1 WHERE $DataZoekterm = $term";
+	$result = mysqli_query($db, $sql);
+	
+	$sql = "UPDATE $TableData SET $DataActive = '0' WHERE $DataNotSeen > 6";
+	$result = mysqli_query($db, $sql);
 }
 
 
@@ -366,19 +369,19 @@ function UpdateData($id, $term) {
 
 
 function changeData($data, $term) {
-	global $TableData, $DataActive, $DataMarktplaatsID, $DataTitle, $DataZoekterm, $DataChanged, $DataPrice, $DataPlaats;
+	global $TableData, $DataActive, $DataMarktplaatsID, $DataTitle, $DataZoekterm, $DataChanged, $DataPrice, $DataPlaats, $DataNotSeen;
 
 	$tijd	= time();
 	
 	$db = connect_db();	
 	$sql	= "UPDATE $TableData SET $DataActive = '1', $DataTitle = '". urlencode($data['title']) ."', $DataPlaats = '". urlencode($data['plaats']) ."', $DataPrice = '". $data['price'] ."', $DataChanged = $tijd, $DataNotSeen = '0'	WHERE $DataMarktplaatsID = ". $data['id'];
-		
+	
 	if(mysqli_query($db,$sql)) {
 		writeToLog($term, "Gewijzigd", $data['id']);
 	} else {
 		writeToLog($term, "Fout met wijzigen", $data['id']);
 		echo $sql ."<br>\n";
-	}	
+	}
 }
 
 
