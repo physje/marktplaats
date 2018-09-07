@@ -22,7 +22,7 @@ include ("../include/inc_head.php");
 
 $db = connect_db();
 
-$sql = "SELECT * FROM $TableData WHERE $DataPlaats NOT LIKE '' AND $DataPlaats NOT IN (SELECT $CoordPlaats FROM $TableCoord) LIMIT 0,1";
+$sql = "SELECT * FROM $TableData WHERE $DataPlaats NOT LIKE '' AND $DataPlaats NOT IN (SELECT $CoordPlaats FROM $TableCoord)";
 $result = mysqli_query($db, $sql);
 
 if($row = mysqli_fetch_array($result)) {
@@ -36,9 +36,9 @@ if($row = mysqli_fetch_array($result)) {
 		    $sql_INSERT = "INSERT INTO $TableCoord ($CoordPlaats, $CoordLongitude, $CoordLatitude) VALUES ('". urlencode($plaats) ."', '". $coord[0].'.'.$coord[1] ."', '". $coord[2].'.'.$coord[3] ."')";
 		    mysqli_query($db, $sql_INSERT);
 		    
-		    echo 'toegevoegd';
+		    echo 'toegevoegd<br>';
 		} else {
-		  echo 'foutieve coordinaten';  
+		  echo 'foutieve coordinaten<br>';  
 		}
 		
 		//. $coord[0].'.'.$coord[1] .'|'. $coord[2].'.'.$coord[3];
