@@ -167,9 +167,10 @@ function getBasicMarktplaatsData($string) {
 	$beschrijving	= getString('<span class="mp-listing-description">', '</span>', $title[1], 0); 
 	$prijs				= getString('<span class="price-new">', '</span>', $beschrijving[1], 0); 
 	$datum				= getString('<div class="date">', '</div>', $prijs[1], 0);
-	$plaats				= getString(' <div class="location-name">', ',', $datum[1], 0);
-	$provincie		= getString(',', '</div>', $plaats[1], 0); 
-	$afstand			= getString('<div class="distance">', 'km', $provincie[1], 0);
+	//$plaats				= getString(' <div class="location-name">', ',', $datum[1], 0);
+	//$provincie		= getString(',', '</div>', $plaats[1], 0); 
+	$plaats				= getString(' <div class="location-name">', '</div>', $datum[1], 0);
+	$afstand			= getString('<div class="distance">', 'km', $plaats[1], 0);
 	
 	if(strpos($string, '<span class="mp-listing-attributes first">'))	$listing_1 = getString('<span class="mp-listing-attributes first">', '</span>', $string, 0);
 	if(strpos($string, '<span class="mp-listing-attributes">'))				$listing_2 = getString('<span class="mp-listing-attributes">', '</span>', $string, 0); 
@@ -180,7 +181,7 @@ function getBasicMarktplaatsData($string) {
 	$Output['descr_short']	=	formatString($beschrijving[0]); 
 	$Output['price']				=	formatString($prijs[0]); 
 	$Output['plaats']				=	formatString($plaats[0]); 
-	$Output['provincie']		=	formatString($provincie[0]); 
+	$Output['provincie']		=	''; 
 	$Output['afstand']			=	formatString($afstand[0]);
 	
 	if(in_array($listing_1[0], $statusArray))	$Output['status'] =	formatString($listing_1[0]); 
