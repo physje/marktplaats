@@ -74,7 +74,12 @@ do {
 	$row_2		= mysqli_fetch_array($result_2);
 	
 	do {
-		$infowindow[] = "<a href='http://link.marktplaats.nl/m". $row_2[$DataMarktplaatsID] ."'>". urldecode($row_2[$DataTitle]) ."</a><br>";
+		$pictures = explode('|', $row[$DataPlaatje]);
+		$infowindow[] = "<a href='http://link.marktplaats.nl/m". $row_2[$DataMarktplaatsID] ."'>". urldecode($row_2[$DataTitle]) ."</a> <b>". $row_2[$DataPrice] ."</b><br>";
+		foreach($pictures as $plaatje) {
+			$infowindow[] = "<img src='http:". $plaatje ."'>&nbsp;";
+		}
+		$infowindow[] = "<br>";
 	} while($row_2 = mysqli_fetch_array($result_2));
 
 		
