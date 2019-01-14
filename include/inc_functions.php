@@ -252,52 +252,6 @@ function NewItem($id, $term) {
 	}	
 }
 
-/*
-function changedTitle($data, $term) {
-	global $DataMarktplaatsID, $TableData, $DataZoekterm, $DataTitle;
-	
-	if(NewItem($data, $term)) {
-		return false;
-	} else {
-		$id			= $data['id'];
-		$titel	= $data['title'];
-	
-		$db			= $db = connect_db();
-		$sql		= "SELECT * FROM $TableData WHERE $DataMarktplaatsID = $id AND $DataZoekterm = $term";
-		$result = mysqli_query($db, $sql);	
-		$row 		= mysqli_fetch_array($result);
-		
-		if($row[$DataTitle] != urlencode($titel)) {			
-			return true;
-		} else {
-			return false;
-		}
-	}	
-}
-
-function changedPrice($data, $term) {
-	global $DataMarktplaatsID, $TableData, $DataZoekterm, $DataPrice;
-	
-	if(NewItem($data, $term)) {
-		return false;
-	} else {
-		$id			= $data['id'];
-		$prijs	= $data['price'];
-	
-		$db			= $db = connect_db();
-		$sql		= "SELECT * FROM $TableData WHERE $DataMarktplaatsID = $id AND $DataZoekterm = $term";
-		$result = mysqli_query($db, $sql);	
-		$row 		= mysqli_fetch_array($result);
-		
-		if($row[$DataPrice] != $prijs) {			
-			return true;
-		} else {
-			return false;
-		}
-	}	
-}
-*/
-
 function makeAdsInactive($term) {
 	global $TableData, $DataZoekterm, $DataActive, $DataNotSeen;
 	
@@ -750,11 +704,11 @@ function getLogData($begin, $eind, $id, $term, $aantal) {
 	return $data;	
 }
 
+/*
 function getNumberOfAds($term, $old) {
 	global $TableData, $DataMarktplaatsID, $DataZoekterm, $DataChanged, $OudeAdvTijd;
 		
-	$db 	= $db = connect_db();
-	
+	$db = connect_db();	
 	$sql	 = "SELECT * FROM $TableData WHERE $DataZoekterm = '$term' ";
 	
 	if($old) {
@@ -765,27 +719,17 @@ function getNumberOfAds($term, $old) {
 	$result = mysqli_query($db, $sql);	
 	return mysqli_num_rows($result);
 }
+*/
 
 
 function getAds($term, $old) {
-	//global $TableData, $DataMarktplaatsID, $DataZoekterm, $DataChanged, $OudeAdvTijd;
-	global $TableData, $DataMarktplaatsID, $DataZoekterm, $DataNotSeen;
+	global $TableData, $DataMarktplaatsID, $DataZoekterm, $DataChanged, $DataNotSeen;
 	
 	$Pages	= array();
 		
 	$db = connect_db();	
 	
 	if($old) {
-		/*
-		$sql_tijd	= "SELECT max($DataChanged) FROM $TableData WHERE $DataZoekterm like '$term'";
-		$result		= mysqli_query($db,$sql_tijd);
-		$row			= mysqli_fetch_array($result);
-		
-		// Ik zoek dus uit wanneer er voor het laatst iets gewijzigd is.
-		// 2 maal dat verschil ten opzichte van nu is 'oud'
-		$tijd 	= time() - (2*(time() - $row[0]));
-		$sql	 	= "SELECT * FROM $TableData WHERE $DataZoekterm like '$term' AND $DataChanged < $tijd";
-		*/
 		$sql	 	= "SELECT * FROM $TableData WHERE $DataZoekterm like '$term' AND $DataNotSeen > 5";
 		writeToLog($term, 'Advertenties die 5 keer niet gezien zijn');
 	} else {
@@ -935,6 +879,7 @@ function getPageDataByMarktplaatsID($id) {
 		
 	if($row = mysqli_fetch_array($result)) {
  		$PageData['ID'] = $row[$DataID];
+ 		$PageData['mID'] = $row[$DataMarktplaatsID];
  		$PageData['URL'] = $row[$DataURL];
  		$PageData['active'] = $row[$DataActive];
  		$PageData['title'] = $row[$DataTitle];
