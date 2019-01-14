@@ -337,12 +337,12 @@ function AddUpdateData($data, $term, $status) {
 
 
 function AddData($data, $term) {
-	global $TableData, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataZoekterm, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataPrice, $DataPlaats, $DataAfstand;
+	global $TableData, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataTitleOorsprong, $DataBeschrijving, $DataDatum, $DataZoekterm, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataPrice, $DataPriceOorsprong, $DataPlaats, $DataAfstand;
 	
 	$tijd	= time();
 	
 	$db 	= connect_db();
-	$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataPlaats, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged) VALUES (". $data['id'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."' ,'". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."','". urlencode($data['plaats']) ."', '". $data['afstand'] ."',	$term, $tijd, $tijd)";
+	$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataTitleOorsprong, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataPriceOorsprong, $DataPlaats, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged) VALUES (". $data['id'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."', '". urlencode($data['title']) ."', '". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."', '". $data['price'] ."', '". urlencode($data['plaats']) ."', '". $data['afstand'] ."', $term, $tijd, $tijd)";
 	
 	if(mysqli_query($db,$sql)) {
 		writeToLog($term, "Toegevoegd", $data['id']);
