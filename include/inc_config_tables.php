@@ -39,6 +39,9 @@ $DataZoekterm				= "term";
 $DataAdded					= "time_add";
 $DataChanged				= "time_change";
 $DataNotSeen				= "times_not_seen"; // nog toevoegen in inc_install
+$DataTitleOorsprong				= "title_oorspronkelijk";
+$DataPriceOorsprong				= "price_oorspronkelijk";
+
 
 $TableLog         = $dbTablePrefix.'log';
 $LogID            = 'id';
