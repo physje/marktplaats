@@ -35,8 +35,9 @@ foreach($Termen as $term) {
 	//$String		= $ZoekData['q'];
 	$RSSkey		= $ZoekData['key'];
 	$aan			= isActive($term);
-	$results	= getNumberOfAds($term, false);
-	//$old			= getNumberOfAds($term, true);
+	//$results	= getNumberOfAds($term, false);
+	$old			= getAds($term, false);
+	$results = count($old);
 			
 	echo "<tr>\n";
 	echo "	<td><a href='edit.php?id=$term'><img src='../images/1_edit.png' border='0'></a></td>\n";
@@ -66,7 +67,8 @@ foreach($Termen as $term) {
 	echo "	<td>&nbsp;</td>\n";
 	echo "	<td><a href='GoogleMaps.php?term=$term'><img src='../images/maps.png' border='0' height=16></a></td>\n";
 	echo "	<td>&nbsp;</td>\n";
-	
+	echo "	<td><a href='export.php?term=$term'><img src='../images/excel.gif' border='0' height=16></a></td>\n";
+	//echo "	<td>&nbsp;</td>\n";
 	echo "</tr>\n";
 }
 

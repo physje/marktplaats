@@ -721,7 +721,6 @@ function getNumberOfAds($term, $old) {
 }
 */
 
-
 function getAds($term, $old) {
 	global $TableData, $DataMarktplaatsID, $DataZoekterm, $DataChanged, $DataNotSeen;
 	
@@ -847,31 +846,18 @@ function makeRSSFeed($term, $prefix) {
 }
 
 function getPageData($id) {
-	global $TableData, $DataID, $DataMarktplaatsID, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataAfstand, $DataPrice;
+	global $TableData, $DataID, $DataMarktplaatsID;
 	
 	$db 		= $db = connect_db();	
 	$sql		= "SELECT * FROM $TableData WHERE $DataID = $id";
 	$result	= mysqli_query($db,$sql);
-			
-	if($row = mysqli_fetch_array($result)) {
-		$PageData['ID'] = $row[$DataMarktplaatsID];
- 		$PageData['URL'] = $row[$DataURL];
- 		$PageData['title'] = $row[$DataTitle];
- 		$PageData['beschrijving'] = $row[$DataBeschrijving];
- 		$PageData['verkoper'] = $row[$DataVerkoper];
- 		$PageData['datum'] = $row[$DataDatum];
- 		$PageData['added'] = $row[$DataAdded];
- 		$PageData['changed'] = $row[$DataChanged]; 		
- 		$PageData['picture'] = $row[$DataPlaatje];
- 		$PageData['afstand'] = $row[$DataAfstand];
- 		$PageData['prijs'] = $row[$DataPrice]; 		
-	}
+	$row = mysqli_fetch_array($result);
 	
-	return $PageData;
+	return getPageDataByMarktplaatsID($row[$DataMarktplaatsID]);
 }
 
 function getPageDataByMarktplaatsID($id) {
-	global $TableData, $DataID, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataAfstand, $DataPrice;
+	global $TableData, $DataID, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataAfstand, $DataPrice, $DataPlaats, $DataNotSeen, $DataTitleOorsprong, $DataPriceOorsprong;
 	
 	$db 		= $db = connect_db();	
 	$sql		= "SELECT * FROM $TableData WHERE $DataMarktplaatsID = $id";	
@@ -891,6 +877,10 @@ function getPageDataByMarktplaatsID($id) {
  		$PageData['picture'] = $row[$DataPlaatje];
  		$PageData['afstand'] = $row[$DataAfstand];
  		$PageData['prijs'] = $row[$DataPrice];
+ 		$PageData['plaats'] = $row[$DataPlaats];
+ 		$PageData['niet_gezien'] = $row[$DataNotSeen];
+ 		$PageData['title_o'] = $row[$DataTitleOorsprong];
+ 		$PageData['prijs_o'] = $row[$DataPriceOorsprong];
 	}
 	
 	return $PageData;
