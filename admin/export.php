@@ -50,7 +50,7 @@ if(isset($_REQUEST['term'])) {
         	if($_POST['koppen']['title_o'] == 1)    $veld[] = $data['title_o'];
         	if($_POST['koppen']['price_o'] == 1)    $veld[] = trim(str_replace('&euro;', '', $data['prijs_o']));
         	
-        	$rij[] = implode("\t", $veld);
+        	$rij[] = implode(";", $veld);
         }
 
         if($_POST['koppen']['db-id'] == 1)      $kop[] = 'ID';
@@ -72,7 +72,7 @@ if(isset($_REQUEST['term'])) {
         if($_POST['koppen']['price_o'] == 1)    $kop[] = 'Prijs (oorspronkelijk)';
                   
         $file_name = $TermData['naam'].'.csv';
-        $output = implode("\t", $kop) ."\n";
+        $output = implode(";", $kop) ."\n";
         $output .= implode("\n", $rij);
               
         header('Content-Description: File Transfer');

@@ -144,7 +144,7 @@ if($Checken) {
      
      # Als de ruwe tekst niet leeg is moet de tekst geprocesed worden
      if($array[$i] != "") {                        
-      $changedTitle = $changedPrijs = $changedData = $newItem = false;
+      $changedTitle = $changedPrijs = $changedData = $changedTransport = $changedStatus = $newItem = false;
       
       # Haal de relevantie data uit de ruwe tekst
       $basicData = getBasicMarktplaatsData($array[$i]);
@@ -164,6 +164,18 @@ if($Checken) {
         $changedPrijs = true;
         $changedData = true;
        }
+       
+       # Wijziging in transport
+       if($oldData['transport'] != $basicData['transport']) {
+        $changedTransport = true;
+        $changedData = true;
+       }
+       
+       # Wijziging in status
+       if($oldData['status'] != $basicData['status']) {
+        $changedStatus = true;
+        $changedData = true;
+       }       
       } else {
        $newItem = true;
       }
@@ -198,8 +210,8 @@ if($Checken) {
         $adInfo[] = "<i><a href='http://verkopers.marktplaats.nl/". $data['verkoper_id'] ."'>". $data['verkoper'] ."</a></i>";
         $adInfo[] = "<a href='http://maps.google.nl/maps?q=". $data['plaats'] ."%2C+Nederland&z=9'>". $data['plaats'] ."</a> (". $data['afstand'] ." km)";
         $adInfo[] = strftime("%a %e %b %H:%M", $data['date']);        
-        if(isset($data['status']))  $adInfo[] = $data['status'];
-        if(isset($data['transport'])) $adInfo[] = $data['transport'];
+        if(isset($data['status']))  $adInfo[] = $data['status'].($changedStatus ? ' <s>'. $oldData['status'] .'</s>' : '');
+        if(isset($data['transport'])) $adInfo[] = $data['transport'].($changedTransport ? ' <s>'. $oldData['transport'] .'</s>' : '');
               
         $PlainItem = strtoupper($data['title']). "\n";
         $PlainItem .= makeTextBlock($data['descr_long'], 500). "\n";

@@ -291,12 +291,12 @@ function AddUpdateData($data, $term, $status) {
 
 
 function AddData($data, $term) {
-	global $TableData, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataTitleOorsprong, $DataBeschrijving, $DataDatum, $DataZoekterm, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataPrice, $DataPriceOorsprong, $DataPlaats, $DataAfstand;
+	global $TableData, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataTitleOorsprong, $DataBeschrijving, $DataDatum, $DataZoekterm, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataPrice, $DataPriceOorsprong, $DataPlaats, $DataAfstand, $DataStatus, $DataTransport;
 	
 	$tijd	= time();
 	
 	$db 	= connect_db();
-	$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataTitleOorsprong, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataPriceOorsprong, $DataPlaats, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged) VALUES (". $data['id'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."', '". urlencode($data['title']) ."', '". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."', '". $data['price'] ."', '". urlencode($data['plaats']) ."', '". $data['afstand'] ."', $term, $tijd, $tijd)";
+	$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataTitleOorsprong, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataPriceOorsprong, $DataPlaats, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged, $DataStatus, $DataTransport) VALUES (". $data['id'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."', '". urlencode($data['title']) ."', '". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."', '". $data['price'] ."', '". urlencode($data['plaats']) ."', '". $data['afstand'] ."', $term, $tijd, $tijd, '". $data['status'] ."', '". $data['transport'] ."')";
 	
 	if(mysqli_query($db,$sql)) {
 		writeToLog($term, "Toegevoegd", $data['id']);
@@ -324,12 +324,12 @@ function UpdateData($id, $term) {
 
 
 function changeData($data, $term) {
-	global $TableData, $DataActive, $DataMarktplaatsID, $DataTitle, $DataZoekterm, $DataChanged, $DataPrice, $DataPlaats, $DataNotSeen;
+	global $TableData, $DataActive, $DataMarktplaatsID, $DataTitle, $DataZoekterm, $DataChanged, $DataPrice, $DataPlaats, $DataNotSeen, $DataStatus, $DataTransport;
 
 	$tijd	= time();
 	
 	$db = connect_db();	
-	$sql	= "UPDATE $TableData SET $DataActive = '1', $DataTitle = '". urlencode($data['title']) ."', $DataPlaats = '". urlencode($data['plaats']) ."', $DataPrice = '". $data['price'] ."', $DataChanged = $tijd, $DataNotSeen = '0'	WHERE $DataMarktplaatsID = ". $data['id'];
+	$sql	= "UPDATE $TableData SET $DataActive = '1', $DataTitle = '". urlencode($data['title']) ."', $DataPlaats = '". urlencode($data['plaats']) ."', $DataPrice = '". $data['price'] ."', $DataStatus = '". $data['status'] ."', $DataTransport = '". $data['transport'] ."', $DataChanged = $tijd, $DataNotSeen = '0'	WHERE $DataMarktplaatsID = ". $data['id'];
 	
 	if(mysqli_query($db,$sql)) {
 		writeToLog($term, "Gewijzigd", $data['id']);
@@ -857,7 +857,7 @@ function getPageData($id) {
 }
 
 function getPageDataByMarktplaatsID($id) {
-	global $TableData, $DataID, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataAfstand, $DataPrice, $DataPlaats, $DataNotSeen, $DataTitleOorsprong, $DataPriceOorsprong;
+	global $TableData, $DataID, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataAfstand, $DataPrice, $DataPlaats, $DataNotSeen, $DataTitleOorsprong, $DataPriceOorsprong, $DataStatus, $DataTransport;
 	
 	$db 		= $db = connect_db();	
 	$sql		= "SELECT * FROM $TableData WHERE $DataMarktplaatsID = $id";	
@@ -881,6 +881,8 @@ function getPageDataByMarktplaatsID($id) {
  		$PageData['niet_gezien'] = $row[$DataNotSeen];
  		$PageData['title_o'] = $row[$DataTitleOorsprong];
  		$PageData['prijs_o'] = $row[$DataPriceOorsprong];
+ 		$PageData['status'] = $row[$DataStatus];
+ 		$PageData['transport'] = $row[$DataTransport]; 		
 	}
 	
 	return $PageData;
