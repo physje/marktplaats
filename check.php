@@ -122,7 +122,7 @@ if($Checken) {
    # 15 zijn voldoende
    if($debug == 2) {
     echo "URL : $URL<br>\nMaximum : $maximum<br>\n<br>\n";
-    if($maximum > 15) $maximum = 15;
+    if($maximum > 20) $maximum = 20;
    }
    
    # Doorloop alle advertenties op de pagina
@@ -165,16 +165,20 @@ if($Checken) {
         $changedData = true;
        }
        
+       # changedData hieronder even uitgezet
+       # als script een paar keer heeft gerund en alle ontbrekende variabelen in de dB staan kan het weer weg
+       # maar anders krijg je dat alle advertenties zijn gewijzigd.
+       
        # Wijziging in transport
        if($oldData['transport'] != $basicData['transport']) {
         $changedTransport = true;
-        $changedData = true;
+        #$changedData = true;
        }
        
        # Wijziging in status
        if($oldData['status'] != $basicData['status']) {
         $changedStatus = true;
-        $changedData = true;
+        #$changedData = true;
        }       
       } else {
        $newItem = true;
@@ -265,7 +269,7 @@ if($Checken) {
        }
        
        if($debug == 0) {
-        if($changedPrijs OR $changedTitle) {
+        if($changedPrijs OR $changedTitle OR $changedStatus OR $changedTransport) {
          $teller_c++;
         } else {
          $teller_n++;
@@ -283,6 +287,10 @@ if($Checken) {
         echo "'". $data['title'] ."' heeft gewijzigde titel<br>";
        } elseif($changedPrijs) {
         echo "'". $data['title'] ."' heeft gewijzigde prijs<br>";
+       } elseif($changedStatus) {
+        echo "'". $data['title'] ."' heeft gewijzigde status<br>";
+       } elseif($changedTransport) {
+        echo "'". $data['title'] ."' heeft gewijzigd transport<br>";
        } else {
         echo "'". $data['title'] ."' bestaat al<br>";
        }    
@@ -291,7 +299,9 @@ if($Checken) {
       $status = array(
        'new' => $newItem,
        'title' => $changedTitle,
-       'prijs' => $changedPrijs
+       'prijs' => $changedPrijs,
+       'status' => $changedStatus,
+       'transport' => $changedTransport
       );
           
       AddUpdateData($data, $term, $status);
@@ -347,7 +357,7 @@ if($Checken) {
     $HTMLFooter .= "</html>\n";
     $HTMLFooter .= "\n\n<!--     Deze pagina is onderdeel van $ScriptTitle $Version gemaakt door Matthijs Draijer     -->";
        
-       $PlainMail  = $PlainHeader . implode("\n\n--- --- --- --- ---\n\n", $PlainMessage) . $PlainFooter;
+      $PlainMail  = $PlainHeader . implode("\n\n--- --- --- --- ---\n\n", $PlainMessage) . $PlainFooter;
        
        $omslag = round(count($HTMLMessage)/2);
        $KolomEen = array_slice ($HTMLMessage, 0, $omslag);
@@ -367,42 +377,43 @@ if($Checken) {
     $HTMLMail .= "</tr>\n";
     $HTMLMail .= $HTMLFooter;
     
-    if($debug == 0) {     
-     if($teller_n != 0) {
-      $Subjects[] = $teller_n . " ". ($teller_n == 1 ? $strCheckItemNew : $strCheckItemsNew);
-     }
-     if($teller_c != 0) {
-      $Subjects[] = $teller_c . " ". ($teller_c == 1 ? $strCheckItemChanged : $strCheckItemsChanged);      
-     }
-     
-     $mail = new PHPMailer;
-     $mail->From     = $ScriptMailAdress;
-     $mail->FromName = $ScriptTitle;
-     $mail->WordWrap = 90;
-     $mail->AddAddress($UserData['mailadres'], $UserData['naam']);
-     $mail->Subject = $SubjectPrefix . implode(' en ', $Subjects) ." $strCheckSubject '". getZoekString($term) ."'";
-     
-     if($ZoekData['CC'] != '') {
-      $mail->AddCC($ZoekData['CC']);
-     }     
-     
-     if($UserData['HTML'] == 1) {
-      $mail->IsHTML(true);
-      $mail->Body   = $HTMLMail;
-      $mail->AltBody = $PlainMail;   
-     } else {
-      $mail->Body = $PlainMail;
-     }
-    
-     if(!$mail->Send()) {
-      echo date("H:i") . " : $strMailError '". getZoekString($term) ."' ($term).<br>";
-      writeToLog($term, $strLogMailError . ' ('. $UserData['naam'] .')');
-     } else {
-      echo date("H:i") . " : $strMailOkay '". getZoekString($term) ."' ($term).<br>";
-      writeToLog($term, $strLogMailOkay . ' ('. $UserData['naam'] .')');
-     }
+    if($debug == 0) {
+    	if($teller_n != 0) {
+    		$Subjects[] = $teller_n . " ". ($teller_n == 1 ? $strCheckItemNew : $strCheckItemsNew);
+    	}
+    	
+    	if($teller_c != 0) {
+    		$Subjects[] = $teller_c . " ". ($teller_c == 1 ? $strCheckItemChanged : $strCheckItemsChanged);      
+    	}
+     	
+     	$mail = new PHPMailer;
+     	$mail->From     = $ScriptMailAdress;
+     	$mail->FromName = $ScriptTitle;
+     	$mail->WordWrap = 90;
+     	$mail->AddAddress($UserData['mailadres'], $UserData['naam']);
+     	$mail->Subject = $SubjectPrefix . implode(' en ', $Subjects) ." $strCheckSubject '". getZoekString($term) ."'";
+     	
+     	if($ZoekData['CC'] != '') {
+     		$mail->AddCC($ZoekData['CC']);
+     	}     
+     	
+     	if($UserData['HTML'] == 1) {
+     		$mail->IsHTML(true);
+     		$mail->Body   = $HTMLMail;
+     		$mail->AltBody = $PlainMail;
+     	} else {
+     		$mail->Body = $PlainMail;
+     	}
+     	
+     	if(!$mail->Send()) {
+     	 	echo date("H:i") . " : $strMailError '". getZoekString($term) ."' ($term).<br>";
+     	 	writeToLog($term, $strLogMailError . ' ('. $UserData['naam'] .')');
+     	} else {
+     	 	echo date("H:i") . " : $strMailOkay '". getZoekString($term) ."' ($term).<br>";
+     	 	writeToLog($term, $strLogMailOkay . ' ('. $UserData['naam'] .')');
+     	}
     } else {
-     echo $HTMLMail;
+    	echo $HTMLMail;
     }
    }    
   } else {

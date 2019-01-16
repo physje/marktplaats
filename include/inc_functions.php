@@ -160,6 +160,7 @@ function getBasicMarktplaatsData($string) {
 	$statusArray = array('Nieuw', 'Gebruikt', 'Zo goed als nieuw');
 	$transportArray = array('Ophalen', 'Ophalen of Verzenden', 'Verzenden');
 	$listing_1 = $listing_2 = array('','');
+	$Output['status'] = $Output['transport'] = '';
 	
 	$url					= getString('<span data-url="', '?', $string, 0);	 
 	$id_gok				= getString('data-item-id="', '">', $string, 0);
@@ -189,7 +190,7 @@ function getBasicMarktplaatsData($string) {
 	
 	if(in_array($listing_1[0], $transportArray))	$Output['transport'] =	formatString($listing_1[0]); 
 	if(in_array($listing_2[0], $transportArray))	$Output['transport'] =	formatString($listing_2[0]);
-	
+		
 	return $Output;	
 }
 
@@ -270,8 +271,10 @@ function AddUpdateData($data, $term, $status) {
 	$newItem = $status['new'];
 	$changedTitle = $status['title'];
 	$changedPrice = $status['prijs'];
+	$changedStatus = $status['status'];
+	$changedTransport = $status['transport'];
 	
-	if(!$newItem AND ($changedTitle OR $changedPrice)) {
+	if(!$newItem AND ($changedPrice OR $changedTitle OR $changedStatus OR $changedTransport)) {
 		# UPDATE titel / prijs		
 		changeData($data, $term);
 	} elseif ($newItem) {
@@ -280,12 +283,6 @@ function AddUpdateData($data, $term, $status) {
 	} else {
 		# UPDATE tijd
 		UpdateData($data['id'], $term);
-		
-		# tijdelijk even zo
-		$db 	= connect_db();
-		
-		$sql	= "UPDATE $TableData SET $DataPlaats = '". urlencode($data['plaats']) ."' WHERE $DataMarktplaatsID = ". $data['id'];
-		mysqli_query($db,$sql);
 	}
 }
 
@@ -330,7 +327,7 @@ function changeData($data, $term) {
 	
 	$db = connect_db();	
 	$sql	= "UPDATE $TableData SET $DataActive = '1', $DataTitle = '". urlencode($data['title']) ."', $DataPlaats = '". urlencode($data['plaats']) ."', $DataPrice = '". $data['price'] ."', $DataStatus = '". $data['status'] ."', $DataTransport = '". $data['transport'] ."', $DataChanged = $tijd, $DataNotSeen = '0'	WHERE $DataMarktplaatsID = ". $data['id'];
-	
+		
 	if(mysqli_query($db,$sql)) {
 		writeToLog($term, "Gewijzigd", $data['id']);
 	} else {
