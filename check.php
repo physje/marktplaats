@@ -122,7 +122,7 @@ if($Checken) {
    # 15 zijn voldoende
    if($debug == 2) {
     echo "URL : $URL<br>\nMaximum : $maximum<br>\n<br>\n";
-    if($maximum > 20) $maximum = 20;
+    if($maximum > 15) $maximum = 15;
    }
    
    # Doorloop alle advertenties op de pagina
@@ -165,20 +165,16 @@ if($Checken) {
         $changedData = true;
        }
        
-       # changedData hieronder even uitgezet
-       # als script een paar keer heeft gerund en alle ontbrekende variabelen in de dB staan kan het weer weg
-       # maar anders krijg je dat alle advertenties zijn gewijzigd.
-       
        # Wijziging in transport
        if($oldData['transport'] != $basicData['transport']) {
         $changedTransport = true;
-        #$changedData = true;
+        $changedData = true;
        }
        
        # Wijziging in status
        if($oldData['status'] != $basicData['status']) {
         $changedStatus = true;
-        #$changedData = true;
+        $changedData = true;
        }       
       } else {
        $newItem = true;
