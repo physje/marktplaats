@@ -226,7 +226,7 @@ if($Checken) {
         			} elseif($data['price_add'] == 'MIN_BID') {
         				$adInfo[] = "<b>Bieden vanaf € ". $data['price'] ."</b>". ($changedPrijs ? ' <s>'. $oldData['prijs'] .'</s>' : '');
         			} else {
-        				$adInfo[] = "<b>€ ". $data['price'] ."</b>". ($changedPrijs ? ' <s>'. $oldData['prijs'] .'</s>' : '');
+        				$adInfo[] = "<b>&euro; ". $data['price'] ."</b>". ($changedPrijs ? ' <s>'. $oldData['prijs'] .'</s>' : '');
         			}
         			
         			$adInfo[] = "<i><a href='http://verkopers.marktplaats.nl/". $data['verkoper_id'] ."'>". $data['verkoper'] ."</a></i>";
