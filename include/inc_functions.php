@@ -400,6 +400,14 @@ function formatString($string) {
 	return $output;	
 }
 
+function formatPrice($input, $euro = true) {
+	if($euro) {
+		return "&euro;&nbsp;". number_format($input, 0,'','.');
+	} else {
+		return number_format($input, 0,'','.');
+	}
+}
+
 /*
 function convertDate($date) {
 	//echo "(". substr($date, 10, 2) .", ". substr($date, 13, 2) .", 0, ". substr($date, 3, 2) .", ". substr($date, 0, 2) .", 20". substr($date, 6, 2) .")";
