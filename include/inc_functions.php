@@ -107,6 +107,7 @@ function getURL($id) {
 	return $URL;
 }
 
+/*
 function addPCtoURL($URL, $postcode) {
 	$URLelementen = parse_url($URL);
 	$ZoekElementen = proper_parse_str($URLelementen['query']);
@@ -119,17 +120,36 @@ function addPCtoURL($URL, $postcode) {
 	
 	return $URL;
 }
+*/
 
-function addPage2URL($URL, $p) {
-	$URLelementen = parse_url($URL);
-	
-	if(count($URLelementen) == 3) {
-		$URL = $URL.'?currentPage='.$p;
+
+function addPCtoURL($URL, $postcode) {
+	if(strpos($URL, '#')) {
+		$URL = $URL.'|postcode:'.$postcode;
 	} else {
-		$URL = $URL.'&currentPage='.$p;
+		$URL = $URL.'/#postcode:'.$postcode;
 	}
 	
 	return $URL;
+}
+
+function addLimit2URL($URL, $limit) {
+	if(strpos($URL, '#')) {
+		$URL = $URL.'|limit:'.$limit;
+	} else {
+		$URL = $URL.'/#limit:'.$limit;
+	}
+	
+	return $URL;
+}
+
+function addPage2URL($URL, $p) {
+	$URLelementen = explode('/', $URL);
+	$key = (array_search('q', $URLelementen)+2);
+	
+	$URL = array_merge(array_slice($URLelementen, 0, $key), array('p', $p), array_slice($URLelementen, $key));
+		
+	return implode('/', $URL);
 }
 
 /*
@@ -184,6 +204,7 @@ function getBasicMarktplaatsData($string) {
 	$Output['plaats']				=	formatString($plaats[0]); 
 	$Output['provincie']		=	''; 
 	$Output['afstand']			=	formatString($afstand[0]);
+	//$Output['afstand']			=	$afstand[0];
 	
 	if(in_array($listing_1[0], $statusArray))	$Output['status'] =	formatString($listing_1[0]); 
 	if(in_array($listing_2[0], $statusArray))	$Output['status'] =	formatString($listing_2[0]);
@@ -197,20 +218,23 @@ function getBasicMarktplaatsData($string) {
 
 function getAdvancedMarktplaatsData($string) {
 	$data					= file_get_contents($string);
-	$bezoeken			= getString('<span id="view-count">', '</span>', $data, 0);	
-	$DatumAll			= getString('sinds</span>', '</span>', $bezoeken[1], 0); 
-	$id						= getString('data-advertisement-id="', '"', $DatumAll[1], 0);
-	$verkoper_id	= getString('<a href="https://www.marktplaats.nl/verkopers/', '.html', $data, 0); 
-	$url_short		= getString('<input class="mp-Input" type="text" value="', '">', $data, 0);
+	//$bezoeken			= getString('<span id="view-count">', '</span>', $data, 0);	
+	//$DatumAll			= getString('sinds</span>', '</span>', $bezoeken[1], 0); 
+	//$id						= getString('data-advertisement-id="', '"', $DatumAll[1], 0);
+	//$verkoper_id	= getString('<a href="https://www.marktplaats.nl/verkopers/', '.html', $data, 0); 
+	//$url_short		= getString('<input class="mp-Input" type="text" value="', '">', $data, 0);
 	//$postcode			= getString("['ad.zipcode']='", "';", $data, 0); 
-	$verkoper			= getString('<h2 class="name mp-text-header3" title="', '">', $verkoper_id[1], 0); 
-	$omschrijving	= getString('<div id="vip-ad-description" class="wrapped">', '</div>', $id[1], 0); 
-		 
+	//$verkoper			= getString('<h2 class="name mp-text-header3" title="', '">', $verkoper_id[1], 0); 
+	$omschrijving	= getString('<div id="vip-ad-description" class="wrapped">', '</div>', $data, 0); 
+	
+		
+	/*	 
 	if(strpos($data, '<nobr><small>')) { 
 		$prijs_add		= getString("<nobr><small>(", ")</small></nobr>", $data, 0); 
 	} else { 
 		$prijs_add[0] = ''; 
-	}	 
+	}
+	*/ 
 			 
 	$gallery	= getString('data-images-l="', '"', $data, 0); 
 	$thumbs		= explode("&", $gallery[0]); 
@@ -224,15 +248,15 @@ function getAdvancedMarktplaatsData($string) {
 		$picture[] = '//s.marktplaats.com/aurora/res/images/no_photo.jpg'; 
 	}
 	
-	$Output['id']						=	formatString($id[0]); 
-	$Output['URL_short']		=	formatString($url_short[0]);
+	//$Output['id']						=	formatString($id[0]); 
+	//$Output['URL_short']		=	formatString($url_short[0]);
 	$Output['picture']			=	implode("|", $picture); 
 	$Output['descr_long']		=	formatString($omschrijving[0]); 
-	$Output['price_add']		=	formatString($prijs_add[0]);
-	$Output['date']					=	convertDate(formatString($DatumAll[0])); 
-	$Output['visits']				=	formatString($bezoeken[0]); 
-	$Output['verkoper']			=	formatString($verkoper[0]); 
-	$Output['verkoper_id']	=	formatString($verkoper_id[0]); 
+	//$Output['price_add']		=	formatString($prijs_add[0]);
+	//$Output['date']					=	convertDate(formatString($DatumAll[0])); 
+	//$Output['visits']				=	formatString($bezoeken[0]); 
+	//$Output['verkoper']			=	formatString($verkoper[0]); 
+	//$Output['verkoper_id']	=	formatString($verkoper_id[0]); 
 
 	return $Output;	
 }
@@ -243,6 +267,7 @@ function NewItem($id, $term) {
 
 	$db = connect_db();
 	$sql = "SELECT * FROM $TableData WHERE $DataMarktplaatsID = $id AND $DataZoekterm = $term";
+		
 	$result = mysqli_query($db, $sql);
 	
 	if($row = mysqli_fetch_array($result))	{
@@ -282,7 +307,7 @@ function AddUpdateData($data, $term, $status) {
 		AddData($data, $term);
 	} else {
 		# UPDATE tijd
-		UpdateData($data['id'], $term);
+		UpdateData($data['key'], $term);
 	}
 }
 
@@ -293,12 +318,12 @@ function AddData($data, $term) {
 	$tijd	= time();
 	
 	$db 	= connect_db();
-	$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataTitleOorsprong, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataPriceOorsprong, $DataPlaats, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged, $DataStatus, $DataTransport) VALUES (". $data['id'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."', '". urlencode($data['title']) ."', '". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."', '". $data['price'] ."', '". urlencode($data['plaats']) ."', '". $data['afstand'] ."', $term, $tijd, $tijd, '". $data['status'] ."', '". $data['transport'] ."')";
+	$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataTitleOorsprong, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataPriceOorsprong, $DataPlaats, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged, $DataStatus, $DataTransport) VALUES (". $data['key'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."', '". urlencode($data['title']) ."', '". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."', '". $data['price'] ."', '". urlencode($data['plaats']) ."', '". $data['afstand'] ."', $term, $tijd, $tijd, '". $data['status'] ."', '". $data['transport'] ."')";
 	
 	if(mysqli_query($db,$sql)) {
-		writeToLog($term, "Toegevoegd", $data['id']);
+		writeToLog($term, "Toegevoegd", $data['key']);
 	} else {
-		writeToLog($term, "Fout met toevoegen", $data['id']);
+		writeToLog($term, "Fout met toevoegen", $data['key']);
 		echo $sql ."<br>\n";
 	}
 }
@@ -326,12 +351,12 @@ function changeData($data, $term) {
 	$tijd	= time();
 	
 	$db = connect_db();	
-	$sql	= "UPDATE $TableData SET $DataActive = '1', $DataTitle = '". urlencode($data['title']) ."', $DataPlaats = '". urlencode($data['plaats']) ."', $DataPrice = '". $data['price'] ."', $DataStatus = '". $data['status'] ."', $DataTransport = '". $data['transport'] ."', $DataChanged = $tijd, $DataNotSeen = '0'	WHERE $DataMarktplaatsID = ". $data['id'];
+	$sql	= "UPDATE $TableData SET $DataActive = '1', $DataTitle = '". urlencode($data['title']) ."', $DataPlaats = '". urlencode($data['plaats']) ."', $DataPrice = '". $data['price'] ."', $DataStatus = '". $data['status'] ."', $DataTransport = '". $data['transport'] ."', $DataChanged = $tijd, $DataNotSeen = '0'	WHERE $DataMarktplaatsID = ". $data['key'];
 		
 	if(mysqli_query($db,$sql)) {
-		writeToLog($term, "Gewijzigd", $data['id']);
+		writeToLog($term, "Gewijzigd", $data['key']);
 	} else {
-		writeToLog($term, "Fout met wijzigen", $data['id']);
+		writeToLog($term, "Fout met wijzigen", $data['key']);
 		echo $sql ."<br>\n";
 	}
 }
@@ -375,6 +400,7 @@ function formatString($string) {
 	return $output;	
 }
 
+/*
 function convertDate($date) {
 	//echo "(". substr($date, 10, 2) .", ". substr($date, 13, 2) .", 0, ". substr($date, 3, 2) .", ". substr($date, 0, 2) .", 20". substr($date, 6, 2) .")";
 
@@ -424,6 +450,8 @@ function convertDate($date) {
 		
 	return mktime($tijdDelen[0], $tijdDelen[1], 0, $maand, $datumDelen[0], '20'. substr($datumDelen[2], -2));
 }
+*/
+
 
 function getMaand($maand) {
 	$maand = strtolower($maand);
