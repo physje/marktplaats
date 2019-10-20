@@ -122,7 +122,7 @@ if($Checken) {
    		}
    		
    		# Doorloop alle advertenties op de pagina
-   		for($i=1 ; $i <= $maximum ; $i++) {
+   		for($i=0 ; $i <= $maximum ; $i++) {
    			$advertentie = $listings[$i];
    			$marktplaatsID = substr($advertentie['itemId'], 1);
    			
@@ -135,7 +135,7 @@ if($Checken) {
     		
     		# Alleen als er een plaatsnaam bekend is moet die geprocesed worden.
     		# Hetzelfde geld voor een advertentie die nog niet gevonden is deze batch
-    		if(isset($advertentie['location']['cityName']) AND !in_array($marktplaatsID, $foundIDs)) {    			
+    		if(isset($advertentie['location']['cityName']) AND !in_array($marktplaatsID, $foundIDs)) {
     			$newFound = true;
     			$foundIDs[] = $marktplaatsID;
     			$changedTitle = $changedPrijs = $changedData = $changedTransport = $changedStatus = $newItem = false;
@@ -220,11 +220,15 @@ if($Checken) {
        				$pictures = explode('|', $data['picture']);
         
         			$adInfo = array();
-        			
+        			        			
         			if($data['price_add'] == 'RESERVED') {
         				$adInfo[] = "<b>Gereserveerd</b>". ($changedPrijs ? ' <s>'. $oldData['prijs'] .'</s>' : '');
         			} elseif($data['price_add'] == 'MIN_BID') {
         				$adInfo[] = "<b>Bieden vanaf ". formatPrice($data['price']) ."</b>". ($changedPrijs ? ' <s>'. $oldData['prijs'] .'</s>' : '');
+        			} elseif($data['price_add'] == 'SEE_DESCRIPTION') {
+        				$adInfo[] = "<b>Zie beschrijving</b>". ($changedPrijs ? ' <s>'. $oldData['prijs'] .'</s>' : '');
+        			} elseif($data['price_add'] == 'FAST_BID') {
+        				$adInfo[] = "<b>Bieden</b>". ($changedPrijs ? ' <s>'. $oldData['prijs'] .'</s>' : '');
         			} else {
         				$adInfo[] = "<b>". formatPrice($data['price']) ."</b>". ($changedPrijs ? ' <s>'. $oldData['prijs'] .'</s>' : '');
         			}

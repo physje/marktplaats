@@ -402,9 +402,9 @@ function formatString($string) {
 
 function formatPrice($input, $euro = true) {
 	if($euro) {
-		return "&euro;&nbsp;". number_format($input, 0,'','.');
+		return "&euro; ". number_format($input, 2,',','.');
 	} else {
-		return number_format($input, 0,'','.');
+		return number_format($input, 2,',','.');
 	}
 }
 
