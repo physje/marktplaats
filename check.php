@@ -336,13 +336,13 @@ if($Checken) {
      			echo $marktplaatsID. ": al eerder gevonden<br>";
      		}
    		}
-   		
-   		writeToLog($term, 'Einde pagina '. $p .' ('. $teller_p .' resultaten)');
-     
+   		     
    		# Zolang er een link is naar een volgende pagina doorgaan
    		# Om te voorkomen dat hij mogelijk eindeloos doorgaat een maximum ingebouwd van 15 pagina
    		   		
    		if($newFound AND $p < 10) {
+   			writeToLog($term, 'Einde pagina '. $p .' ('. $teller_p .' resultaten)');
+   			
    			$nextPage  = true;
    			$p++;
    		} else {
@@ -351,7 +351,7 @@ if($Checken) {
    		}
    	}
    	
-   	writeToLog($term, 'Gevonden resulaten : '. ($teller_c+$teller_n+$teller_b));
+   	writeToLog($term, 'Totaal aantal gevonden resulaten : '. ($teller_c+$teller_n+$teller_b));
    	
    	if($teller_n > 0 OR $teller_c > 0 OR $debug == 1) {
    		if($rss == 1 OR $rss == 2) {
