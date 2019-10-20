@@ -70,7 +70,7 @@ if($Checken) {
    		$HTMLHeader .= "</head>\n";
    		$HTMLHeader .= "<body>\n";
    		$HTMLHeader .= "<center>\n";
-   		$HTMLHeader .= "<table width='100%' align='center' border=0>\n";
+   		$HTMLHeader .= "<table width='500px' align='center' border=0>\n";
    	}
    	
    	# Als we reclame hebben, moet dat bovenaan de mail getoond worden
@@ -105,7 +105,7 @@ if($Checken) {
    		# Alleen de relevante advertenties inlezen
    		$string = getString('<script id="__NEXT_DATA__" type="application/json">', '</script>', $inhoud, 0);   
    		$json = json_decode($string[0], true);
-   		
+   		   		
    		# Array maken met losse advertenties
    		$listings = $json['props']['pageProps']['searchRequestAndResponse']['listings'];
    		
@@ -170,26 +170,26 @@ if($Checken) {
        
     		   	# Wijziging in titel
        			if(urldecode($oldData['title']) != $basicData['title']) {
-			        $changedTitle = true;
-        			$changedData = true;
+       				$changedTitle = true;
+       				$changedData = true;
        			}
        
        			# Wijziging in prijs
-       			if($oldData['prijs'] != $basicData['price']) {
-       			 $changedPrijs = true;
-       			 $changedData = true;
+       			if(formatPrice($oldData['prijs'], false) != formatPrice($basicData['price'], false)) {
+       			  $changedPrijs = true;
+       			  $changedData = true;
        			}
        			       			
        			# Wijziging in transport
        			if($oldData['transport'] != $basicData['transport']) {
-       			 $changedTransport = true;
-       			 $changedData = true;
+       			  $changedTransport = true;
+       			  $changedData = true;
        			}
        			       			
        			# Wijziging in status
        			if($oldData['status'] != $basicData['status']) {
-       			 $changedStatus = true;
-       			 $changedData = true;
+       			  $changedStatus = true;
+       			  $changedData = true;
        			}
        		} else {
        			$newItem = true;       			
@@ -222,17 +222,18 @@ if($Checken) {
         			$adInfo = array();
         			        			
         			if($data['price_add'] == 'RESERVED') {
-        				$adInfo[] = "<b>Gereserveerd</b>". ($changedPrijs ? ' <s>'. $oldData['prijs'] .'</s>' : '');
+        				$currentPrice = "<b>Gereserveerd</b>";
         			} elseif($data['price_add'] == 'MIN_BID') {
-        				$adInfo[] = "<b>Bieden vanaf ". formatPrice($data['price']) ."</b>". ($changedPrijs ? ' <s>'. $oldData['prijs'] .'</s>' : '');
+        				$currentPrice = "<b>Bieden vanaf ". formatPrice($data['price']) ."</b>";
         			} elseif($data['price_add'] == 'SEE_DESCRIPTION') {
-        				$adInfo[] = "<b>Zie beschrijving</b>". ($changedPrijs ? ' <s>'. $oldData['prijs'] .'</s>' : '');
+        				$currentPrice = "<b>Zie beschrijving</b>";
         			} elseif($data['price_add'] == 'FAST_BID') {
-        				$adInfo[] = "<b>Bieden</b>". ($changedPrijs ? ' <s>'. $oldData['prijs'] .'</s>' : '');
+        				$currentPrice = "<b>Bieden</b>";
         			} else {
-        				$adInfo[] = "<b>". formatPrice($data['price']) ."</b>". ($changedPrijs ? ' <s>'. $oldData['prijs'] .'</s>' : '');
+        				$currentPrice = "<b>". formatPrice($data['price']) ."</b>";
         			}
         			
+        			$adInfo[] = $currentPrice.($changedPrijs ? ' <s>'. formatPrice($oldData['prijs']) .'</s>' : '');
         			$adInfo[] = "<i><a href='http://verkopers.marktplaats.nl/". $data['verkoper_id'] ."'>". $data['verkoper'] ."</a></i>";
         			$adInfo[] = "<a href='http://maps.google.nl/maps?q=". $data['plaats'] ."%2C+Nederland&z=9'>". $data['plaats'] ."</a>". ($data['afstand'] > 0 ? ' ('. $data['afstand'] ." km)": '');
         			$adInfo[] = strftime("%a %e %b %H:%M", $data['date']);        
@@ -272,7 +273,7 @@ if($Checken) {
         			  $atr = 'height="100"';
         			 }
         			 
-        			 $Item .= "  <td><a href='". str_replace('_82.', '_85.', $foto) ."'><img src='http:$foto' $atr></a></td>\n";
+        			 $Item .= "  <td><a href='http:". str_replace('_82.', '_85.', $foto) ."'><img src='http:$foto' $atr></a></td>\n";
         			 
         			 if(fmod($key, 3) == 2) {
         			  $Item .= " </tr>\n";
@@ -346,7 +347,7 @@ if($Checken) {
    			$p++;
    		} else {
    			$nextPage  = false;
-   			echo 'Laatste pagina, niks nieuws gevonden';
+   			if($debug != 0)	echo 'Laatste pagina, niks nieuws gevonden';
    		}
    	}
    	
@@ -369,15 +370,18 @@ if($Checken) {
     		$FooterText = " <table width=100%>\n";
     		$FooterText .= " <tr>\n";
     		$FooterText .= "  <td align='left'><a href='". $ScriptRoot ."admin/edit.php?id=$term'>$strCheckCommand</a> | <a href='$URL'>$strCheckResults</a> | <a href='". $ScriptRoot ."admin/GoogleMaps.php?term=$term'>Google Maps</a> | <a href='". $ScriptRoot ."RSS/". $ZoekData['key'] .".xml'>RSS-feed</a></td>\n";
-    		$FooterText .= "  <td align='right'>© ". (date("Y") != 2006 ? '2006-' : ''). date("Y") ." <a href='mailto:Matthijs Draijer <hotscripts@draijer.org>?Subject=Opmerking over $ScriptTitle $Version'>Matthijs Draijer</a>\n";
+    		$FooterText .= "  <td align='right'>© ". (date("Y") != 2006 ? '2006-' : ''). date("Y") ." <a href='mailto:Matthijs Draijer <hotscripts@draijer.org>?Subject=Opmerking over $ScriptTitle $Version'>Matthijs Draijer</a></td>\n";
     		$FooterText .= " </tr>\n";
     		$FooterText .= " </table>\n";
     		
     		$HTMLFooter = "<tr>\n";
-    		$HTMLFooter .= " <td colspan='2' align='center'>&nbsp;</td>\n";
+    		//$HTMLFooter .= " <td colspan='2' align='center'>&nbsp;</td>\n";
+    		$HTMLFooter .= " <td colspan='3' align='center'>&nbsp;</td>\n";
     		$HTMLFooter .= "</tr>\n";    
     		$HTMLFooter .= "<tr>\n";
-    		$HTMLFooter .= " <td colspan='2' align='center'>". showBlock($FooterText) ."</td>\n";
+    		$HTMLFooter .= "	<td>&nbsp;</td>\n";
+    		$HTMLFooter .= "	<td align='center'>". showBlock($FooterText) ."</td>\n";
+    		$HTMLFooter .= "	<td>&nbsp;</td>\n";
     		$HTMLFooter .= "</tr>\n";
     		$HTMLFooter .= "</table>\n";   
     		$HTMLFooter .= "</body>\n";
@@ -386,12 +390,13 @@ if($Checken) {
     		   
       	$PlainMail  = $PlainHeader . implode("\n\n--- --- --- --- ---\n\n", $PlainMessage) . $PlainFooter;
        
-       	$omslag = round(count($HTMLMessage)/2);
-       	$KolomEen = array_slice ($HTMLMessage, 0, $omslag);
-       	$KolomTwee = array_slice ($HTMLMessage, $omslag, $omslag);
+       	//$omslag = round(count($HTMLMessage)/2);
+       	//$KolomEen = array_slice ($HTMLMessage, 0, $omslag);
+       	//$KolomTwee = array_slice ($HTMLMessage, $omslag, $omslag);
                  
+        /*
     		$HTMLMail = $HTMLHeader;
-		    $HTMLMail .= "<tr>\n";
+		    $HTMLMail .= "<tr>\n";		    
 		    $HTMLMail .= "<td width='50%' valign='top' align='center'>\n";
 		    $HTMLMail .= implode("\n<p>\n", $KolomEen);
 		    $HTMLMail .= "</td><td width='50%' valign='top' align='center'>\n";
@@ -404,6 +409,15 @@ if($Checken) {
 		    $HTMLMail .= "</td>\n";
 		    $HTMLMail .= "</tr>\n";
 		    $HTMLMail .= $HTMLFooter;
+		    */
+		    
+		    $HTMLMail = $HTMLHeader;
+		    $HTMLMail .= "<tr>\n";		    
+		    $HTMLMail .= "	<td>&nbsp;</td>\n";
+		    $HTMLMail .= "	<td width='480px' valign='top' align='center'>". implode("\n<p>\n", $HTMLMessage) ."</td>\n";
+				$HTMLMail .= "	<td>&nbsp;</td>\n";
+		    $HTMLMail .= "</tr>\n";
+		    $HTMLMail .= $HTMLFooter;		    		    
 		    
 		    if($debug == 0) {
 		    	if($teller_n != 0) {
