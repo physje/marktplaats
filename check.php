@@ -70,7 +70,7 @@ if($Checken) {
    		$HTMLHeader .= "</head>\n";
    		$HTMLHeader .= "<body>\n";
    		$HTMLHeader .= "<center>\n";
-   		$HTMLHeader .= "<table width='500px' align='center' border=0>\n";
+   		$HTMLHeader .= "<table width='400px' align='center' border=0>\n";
    	}
    	
    	# Als we reclame hebben, moet dat bovenaan de mail getoond worden
@@ -145,7 +145,7 @@ if($Checken) {
 					$basicData['URL']					=	$advertentie['vipUrl'];
 					$basicData['title'] 			= $advertentie['title'];
 					$basicData['descr_short']	= $advertentie['description'];
-					$basicData['price']				= ($advertentie['priceInfo']['priceCents']/100);
+					$basicData['price']				= $advertentie['priceInfo']['priceCents'];
 					$basicData['plaats']			= $advertentie['location']['cityName'];
 					//$basicData['provincie']		= $advertentie['location']['countryName'];
 					$basicData['afstand']			= $advertentie['location']['distanceMeters'];
@@ -376,12 +376,13 @@ if($Checken) {
     		
     		$HTMLFooter = "<tr>\n";
     		//$HTMLFooter .= " <td colspan='2' align='center'>&nbsp;</td>\n";
-    		$HTMLFooter .= " <td colspan='3' align='center'>&nbsp;</td>\n";
+    		//$HTMLFooter .= " <td colspan='3' align='center'>&nbsp;</td>\n";
+		$HTMLFooter .= " <td>&nbsp;</td>\n";
     		$HTMLFooter .= "</tr>\n";    
     		$HTMLFooter .= "<tr>\n";
-    		$HTMLFooter .= "	<td>&nbsp;</td>\n";
+    		//$HTMLFooter .= "	<td>&nbsp;</td>\n";
     		$HTMLFooter .= "	<td align='center'>". showBlock($FooterText) ."</td>\n";
-    		$HTMLFooter .= "	<td>&nbsp;</td>\n";
+    		//$HTMLFooter .= "	<td>&nbsp;</td>\n";
     		$HTMLFooter .= "</tr>\n";
     		$HTMLFooter .= "</table>\n";   
     		$HTMLFooter .= "</body>\n";
