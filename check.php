@@ -414,9 +414,9 @@ if($Checken) {
 		    
 		    $HTMLMail = $HTMLHeader;
 		    $HTMLMail .= "<tr>\n";		    
-		    $HTMLMail .= "	<td>&nbsp;</td>\n";
+		    //$HTMLMail .= "	<td>&nbsp;</td>\n";
 		    $HTMLMail .= "	<td width='480px' valign='top' align='center'>". implode("\n<p>\n", $HTMLMessage) ."</td>\n";
-				$HTMLMail .= "	<td>&nbsp;</td>\n";
+		    //$HTMLMail .= "	<td>&nbsp;</td>\n";
 		    $HTMLMail .= "</tr>\n";
 		    $HTMLMail .= $HTMLFooter;		    		    
 		    
