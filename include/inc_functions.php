@@ -400,7 +400,9 @@ function formatString($string) {
 	return $output;	
 }
 
-function formatPrice($input, $euro = true) {
+function formatPrice($price, $euro = true) {
+	$input = $price/100;
+	
 	if($euro) {
 		return "&euro; ". number_format($input, 2,',','.');
 	} else {
