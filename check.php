@@ -49,13 +49,13 @@ if($Checken) {
 		$nextPage    = true;
 		
 		# Zoek data van de huidige zoekopdracht op
-		$ZoekData = getZoekData($term);
+		$ZoekData = getZoekData($term);					
 		$UserData = getUserData($ZoekData['user']);
 		$rss   = $UserData['RSS'];  
 		$URL    = $ZoekData['URL'];
 		if($URL == '') $URL = getURL($term);  
-		$URL = addPCtoURL($URL, $UserData['postcode']);
-		$URL = addLimit2URL($URL, 100);
+		//$URL = addPCtoURL($URL, $UserData['postcode']);
+		//$URL = addLimit2URL($URL, 100);
 		//$URL .= $URL."&sortBy=SortIndex";
 		
 		# Als er een mail verstuurd moet worden, mail initialiseren
@@ -118,11 +118,12 @@ if($Checken) {
    		# 15 zijn voldoende
    		if($debug == 2) {
    			echo "URL : $URL<br>\nMaximum : $maximum<br>\n<br>\n";
-   			if($maximum > 15) $maximum = 15;
+   			if($maximum > 5) $maximum = 5;
    		}
    		
    		# Doorloop alle advertenties op de pagina
    		for($i=0 ; $i <= $maximum ; $i++) {
+   			$opnemenInMail = true;
    			$advertentie = $listings[$i];
    			$marktplaatsID = substr($advertentie['itemId'], 1);
    			
@@ -134,6 +135,7 @@ if($Checken) {
     		} 
     		
     		# Alleen als er een plaatsnaam bekend is moet die geprocesed worden.
+    		# Zonder plaatsnaam is het vaak een webshop of andere ongein
     		# Hetzelfde geld voor een advertentie die nog niet gevonden is deze batch
     		if(isset($advertentie['location']['cityName']) AND !in_array($marktplaatsID, $foundIDs)) {
     			$newFound = true;
@@ -147,7 +149,7 @@ if($Checken) {
 					$basicData['descr_short']	= $advertentie['description'];
 					$basicData['price']				= $advertentie['priceInfo']['priceCents'];
 					$basicData['plaats']			= $advertentie['location']['cityName'];
-					//$basicData['provincie']		= $advertentie['location']['countryName'];
+					//$basicData['provincie']	= $advertentie['location']['countryName'];
 					$basicData['afstand']			= $advertentie['location']['distanceMeters'];
 					
 					if(isset($advertentie['attributes'][0]) AND $advertentie['attributes'][0]['key'] == 'condition')	$basicData['status'] = $advertentie['attributes'][0]['value'];
@@ -158,11 +160,32 @@ if($Checken) {
 						
 					$basicData['URL_short']		=	'https://link.marktplaats.nl/'. $advertentie['itemId'];
 					$basicData['price_add']		=	$advertentie['priceInfo']['priceType'];
-					$basicData['date']					=	strtotime($advertentie['date']); 
-					//$detailData['visits']				=	formatString($bezoeken[0]); 
-					$basicData['verkoper']			=	$advertentie['sellerInformation']['sellerName']; 
+					$basicData['date']				=	strtotime($advertentie['date']); 
+					//$detailData['visits']		=	formatString($bezoeken[0]); 
+					$basicData['verkoper']		=	$advertentie['sellerInformation']['sellerName']; 
 					$basicData['verkoper_id']	= $advertentie['sellerInformation']['sellerId'];
-
+					
+					# Doe een 1ste check of deze op basis van prijs moet worden opgenomen in de mail
+					if($ZoekData['pmin'] != '' OR $ZoekData['pmax'] != '') {
+						$opnemenInMail = false;
+						
+						if($ZoekData['pmin'] != '') {
+							if($ZoekData['pmax'] != '') {
+								if($basicData['price'] > (100*$ZoekData['pmin']) AND $basicData['price'] < (100*$ZoekData['pmax'])) {
+									$opnemenInMail = true;
+								}
+							} elseif($basicData['price'] > (100*$ZoekData['pmin'])) {
+								$opnemenInMail = true;
+							}
+       			}
+       			
+       			if($ZoekData['pmax'] != '') {
+       				if($basicData['price'] < (100*$ZoekData['pmin'])) {
+       					$opnemenInMail = true;
+       				}
+       			}       			
+       		}
+       		
     			    			
     			# Als hij nog niet bekend is, moet er verder gezocht worden      
     			if(!NewItem($basicData['key'], $term)) {
@@ -194,11 +217,41 @@ if($Checken) {
        		} else {
        			$newItem = true;       			
        		}
-       		       		
+       		       		       		
        		# Bij een nieuwe of gewijzigde advertenties moet de pagina van de advertentie worden ingelezen
-       		if($newItem OR $changedData) {
+       		if(($newItem OR $changedData) AND $opnemenInMail) {
        			$detailData = getAdvancedMarktplaatsData('https://www.marktplaats.nl'.$basicData['URL']);
        			$data = array_merge($basicData, $detailData);
+       			
+       			# Doe een 2de check of deze op basis van afstand moet worden opgenomen in de mail
+       			if($ZoekData['dmin'] != '' OR $ZoekData['dmax'] != '') {
+							$opnemenInMail = false;
+							
+							# Staat de coordinaten in de advertentie of moet er even worden gezocht
+							if($detailData['long'] != '' AND $detailData['lat'] != '') {
+								$coord = array($detailData['long'], $detailData['lat']);
+							} else {
+								$coord = getCoordinates('', '', $data['plaats']);								
+							}
+							
+							$afstand		= getDistance($UserData['coord'], $coord);
+							
+							if($ZoekData['dmin'] != '') {
+								if($ZoekData['dmax'] != '') {
+									if($afstand > (1000*$ZoekData['dmin']) AND $afstand < (1000*$ZoekData['dmax'])) {
+										$opnemenInMail = true;
+									}
+								} elseif($afstand > (1000*$ZoekData['dmin'])) {
+									$opnemenInMail = true;
+								}
+       				}
+       		  	       			  	
+       				if($ZoekData['dmax'] != '') {
+       					if($afstand < (1000*$ZoekData['dmax'])) {       							
+       						$opnemenInMail = true;
+       					}
+       				}
+       			}
        		} else {
        			$data = $basicData;       			
        		}
@@ -207,15 +260,15 @@ if($Checken) {
        		if($debug == 2) {
        			echo '<hr>';
        			foreach($data as $key => $value) {
-       				echo "$key -> $value<br>\n\n";
+       				echo "<b>$key</b> -> $value<br>\n\n";
        			}
        			
        			if($newItem) echo "Nieuw<br>\n";
        			if($changedData) echo "Gewijzigd<br>\n";
        		}
-       		
+       		       		
        		# Bij een nieuwe of gewijzigde advertentie tekst voor de mail opstellen
-       		if($newItem OR $changedData) {
+       		if(($newItem OR $changedData) AND $opnemenInMail) {
        			if($rss == 0 OR $rss == 2) {
        				$pictures = explode('|', $data['picture']);
         
@@ -307,18 +360,24 @@ if($Checken) {
       		if($debug == 1) {
       			echo $marktplaatsID. ": '<a href='". $basicData['URL_short'] ."'>". $data['title'] ."</a>'";
       			if($newItem) {
-      				echo " is nieuw : ". strftime("%a %e %b %H:%M", $data['date']) .'<br>';
+      				echo " is nieuw : ". strftime("%a %e %b %H:%M", $data['date']);
       			} elseif($changedTitle) {
-      				echo " heeft gewijzigde titel<br>";
+      				echo " heeft gewijzigde titel";
       			} elseif($changedPrijs) {
-      				echo " heeft gewijzigde prijs<br>";
+      				echo " heeft gewijzigde prijs";
       			} elseif($changedStatus) {
-      				echo " heeft gewijzigde status<br>";
+      				echo " heeft gewijzigde status";
       			} elseif($changedTransport) {
-      				echo " heeft gewijzigd transport<br>";
+      				echo " heeft gewijzigd transport";
       			} else {
-      				echo " bestaat al<br>";
-      			}    
+      				echo " bestaat al";
+      			}
+      			
+      			if($opnemenInMail) {
+      				echo ", gaat mee in de mail<br>\n";
+      			} else {
+      				echo ", valt buiten de criteria<br>\n";
+      			}      				
       		}
       		
       		$status = array(
@@ -338,8 +397,7 @@ if($Checken) {
    		}
    		     
    		# Zolang er een link is naar een volgende pagina doorgaan
-   		# Om te voorkomen dat hij mogelijk eindeloos doorgaat een maximum ingebouwd van 15 pagina
-   		   		
+   		# Om te voorkomen dat hij mogelijk eindeloos doorgaat een maximum ingebouwd van 10 pagina   		   		
    		if($newFound AND $p < 10) {
    			writeToLog($term, 'Einde pagina '. $p .' ('. $teller_p .' resultaten)');
    			
@@ -375,14 +433,10 @@ if($Checken) {
     		$FooterText .= " </table>\n";
     		
     		$HTMLFooter = "<tr>\n";
-    		//$HTMLFooter .= " <td colspan='2' align='center'>&nbsp;</td>\n";
-    		//$HTMLFooter .= " <td colspan='3' align='center'>&nbsp;</td>\n";
-		$HTMLFooter .= " <td>&nbsp;</td>\n";
+				$HTMLFooter .= " <td>&nbsp;</td>\n";
     		$HTMLFooter .= "</tr>\n";    
     		$HTMLFooter .= "<tr>\n";
-    		//$HTMLFooter .= "	<td>&nbsp;</td>\n";
     		$HTMLFooter .= "	<td align='center'>". showBlock($FooterText) ."</td>\n";
-    		//$HTMLFooter .= "	<td>&nbsp;</td>\n";
     		$HTMLFooter .= "</tr>\n";
     		$HTMLFooter .= "</table>\n";   
     		$HTMLFooter .= "</body>\n";
@@ -390,33 +444,10 @@ if($Checken) {
     		$HTMLFooter .= "\n\n<!--     Deze pagina is onderdeel van $ScriptTitle $Version gemaakt door Matthijs Draijer     -->";
     		   
       	$PlainMail  = $PlainHeader . implode("\n\n--- --- --- --- ---\n\n", $PlainMessage) . $PlainFooter;
-       
-       	//$omslag = round(count($HTMLMessage)/2);
-       	//$KolomEen = array_slice ($HTMLMessage, 0, $omslag);
-       	//$KolomTwee = array_slice ($HTMLMessage, $omslag, $omslag);
-                 
-        /*
-    		$HTMLMail = $HTMLHeader;
-		    $HTMLMail .= "<tr>\n";		    
-		    $HTMLMail .= "<td width='50%' valign='top' align='center'>\n";
-		    $HTMLMail .= implode("\n<p>\n", $KolomEen);
-		    $HTMLMail .= "</td><td width='50%' valign='top' align='center'>\n";
-		    if(count($KolomTwee) > 0) {
-		    	$HTMLMail .= implode("\n<p>\n", $KolomTwee); 
-		    } else {
-		    	$HTMLMail .= "&nbsp;"; 
-		    }
-		    
-		    $HTMLMail .= "</td>\n";
-		    $HTMLMail .= "</tr>\n";
-		    $HTMLMail .= $HTMLFooter;
-		    */
 		    
 		    $HTMLMail = $HTMLHeader;
 		    $HTMLMail .= "<tr>\n";		    
-		    //$HTMLMail .= "	<td>&nbsp;</td>\n";
 		    $HTMLMail .= "	<td width='480px' valign='top' align='center'>". implode("\n<p>\n", $HTMLMessage) ."</td>\n";
-		    //$HTMLMail .= "	<td>&nbsp;</td>\n";
 		    $HTMLMail .= "</tr>\n";
 		    $HTMLMail .= $HTMLFooter;		    		    
 		    
@@ -472,18 +503,5 @@ if($Checken) {
 }
 
 include ('include/inc_footer.php');
-
-
-function showArray($keys, $array) {
-	foreach($array as $key => $value) {
-		$newKey = $keys.'['.$key .']';
-		
-		if(is_array($value)) {
-			showArray($newKey, $value);
-		} else {
-			echo $newKey .' -> '. $value .'<br>';
-		}
-	}
-}
 
 ?>

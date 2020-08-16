@@ -21,7 +21,7 @@ echo "<!--     Deze pagina is onderdeel van $ScriptTitle $Version gemaakt door M
 <title><?php echo $ScriptTitle ." ". $Version ?></title>
 <link rel='stylesheet' type='text/css' href='<?php echo $ScriptRoot ?>include/style.css'>
 <meta http-equiv="pragma" content="no-cache">
-<?php if($landingPage) {
+<?php if(isset($landingPage) AND $landingPage) {
 	echo "<meta http-equiv=refresh content='5;url=$ScriptDownload'>\n";
 } ?>
 </head>
@@ -33,7 +33,7 @@ echo "<!--     Deze pagina is onderdeel van $ScriptTitle $Version gemaakt door M
 	<tr>
 		<td>
 <?php
-if(!$publicPage && is_dir ('../install')) {
+if(isset($publicPage) && !$publicPage && is_dir ('../install')) {
 	echo "<font class='error'>Helaas, de install-directory bestaat nog.</font>";
 	include ('inc_footer.php');
 	exit;

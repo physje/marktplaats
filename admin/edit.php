@@ -23,14 +23,8 @@ $cfgProgDir = '../auth/';
 include($cfgProgDir. "secure.php");
 include ("../include/inc_head.php");
 
-if($_REQUEST['loc_type'] == 'zip') {
-	$pv = '';
-} else {
-	$postcode = $distance = '';		
-}
-
 if(isset($_REQUEST['opslaan'])) {
-	saveURL($_REQUEST['id'], $_SESSION['UserID'], $_REQUEST['active'], $_REQUEST['URL'], $_REQUEST['CC'], $_REQUEST['naam'], $_REQUEST['dagen'], $_REQUEST['uren']);
+	saveURL($_REQUEST['id'], $_SESSION['UserID'], $_REQUEST['active'], $_REQUEST['URL'], $_REQUEST['CC'], $_REQUEST['naam'], $_POST['min_price'], $_POST['max_price'], $_POST['min_afstand'], $_POST['max_afstand'], $_REQUEST['dagen'], $_REQUEST['uren']);
 				
 	if($_REQUEST['id'] != "") {
 		echo "'<b>". getZoekString($_REQUEST['id']) ."</b>' $strEditChanged.";
@@ -41,12 +35,16 @@ if(isset($_REQUEST['opslaan'])) {
 	}
 } else {
 	if(isset($_REQUEST['test'])) {		
-		if(isset($_POST['active']))		{ $active = $_POST['active']; }
-		if(isset($_POST['uren']))		{ $uur = $_POST['uren']; }
-		if(isset($_POST['dagen']))	{ $dag = $_POST['dagen']; }		
-		if(isset($_POST['naam']))		{ $naam = $_POST['naam']; }
-		if(isset($_POST['CC']))			{ $CC = $_POST['CC']; }
-		if(isset($_POST['URL']))		{ $URL = $_REQUEST['URL']; }
+		if(isset($_POST['active']))				$active = $_POST['active'];
+		if(isset($_POST['uren']))					$uur = $_POST['uren'];
+		if(isset($_POST['dagen']))				$dag = $_POST['dagen'];		
+		if(isset($_POST['naam']))					$naam = $_POST['naam'];
+		if(isset($_POST['CC']))						$CC = $_POST['CC'];
+		if(isset($_POST['URL']))					$URL = $_REQUEST['URL'];
+		if(isset($_POST['min_price']))		$pmin = $_REQUEST['min_price'];
+		if(isset($_POST['max_price']))		$pmax = $_REQUEST['max_price'];
+		if(isset($_POST['min_afstand']))	$dmin = $_REQUEST['min_afstand'];
+		if(isset($_POST['max_afstand']))	$dmax = $_REQUEST['max_afstand'];
 				
 		echo "<a href='$URL' target='_new'>$strPreview</a>";
 		echo "<p>";
@@ -62,6 +60,10 @@ if(isset($_REQUEST['opslaan'])) {
 		$naam			= $data['naam'];
 		$CC				= $data['CC'];
 		$URL			= $data['URL'];
+		$pmin			= $data['pmin'];
+		$pmax			= $data['pmax'];
+		$dmin			= $data['dmin'];
+		$dmax			= $data['dmax'];
 				
 		if($user != $_SESSION['UserID']) {
 			echo "Helaas je hebt geen toegang tot deze zoekterm.";
@@ -88,7 +90,7 @@ if(isset($_REQUEST['opslaan'])) {
 	$Namen = array(0 => 'Zondag', 1 => 'Maandag', 2 => 'Dinsdag', 3 => 'Woensdag', 4 => 'Donderdag', 5 => 'Vrijdag', 6 => 'Zaterdag');
 	
 	for($d = 0; $d < 7 ; $d++) {
-		echo "<tr><td><input type='checkbox' name='dagen[$d]' value='1'". ($dag[$d] == 1 ? ' checked' : '') ."> ". $Namen[$d] ."</td></tr>\n";
+		echo "<tr><td><input type='checkbox' name='dagen[$d]' value='1'". ((isset($dag[$d]) AND $dag[$d] == 1) ? ' checked' : '') ."> ". $Namen[$d] ."</td></tr>\n";
 	}
 	
 	echo "	</table>\n";
@@ -103,7 +105,7 @@ if(isset($_REQUEST['opslaan'])) {
 		$Termen		= getZoekTermen('', '', $h, 1);
 		$nrTermen	= count($Termen);
 	
-		echo "<td><input type='checkbox' name='uren[$h]' value='1'". ($uur[$h] == 1 ? ' checked' : '') ."> $h uur ($nrTermen)</td>\n";
+		echo "<td><input type='checkbox' name='uren[$h]' value='1'". ((isset($uur[$h]) AND $uur[$h] == 1) ? ' checked' : '') ."> $h uur ($nrTermen)</td>\n";
 		echo "<td>&nbsp;</td>\n";
 		
 		if(fmod($h,4) == 3) {
@@ -124,7 +126,14 @@ if(isset($_REQUEST['opslaan'])) {
 	echo "<br>\n";
 	echo "<b>Zoek-URL</b><br>\n";
 	echo "<input type='text' name='URL' size='100' value='$URL' alt='Wat is de zoekopdracht die bij marktplaats.nl in de adresregel staat ?'><br>\n";	
-	echo "<br>\n";	
+	echo "<br>\n";
+	echo "<b>Prijsrange</b> (leeglaten voor geen)<br>\n";
+	echo "&euro; <input type='text' name='min_price' size='5' value='$pmin' alt='Wat is de minimale prijs'> t/m <input type='text' name='max_price' size='5' value='$pmax' alt='Wat is de maximale prijs'><br>\n";	
+	echo "<br>\n";
+	echo "<b>Afstanden</b> (leeglaten voor geen)<br>\n";
+	echo "<input type='text' name='min_afstand' size='5' value='$dmin' alt='Wat is de minimale afstand'> t/m <input type='text' name='max_afstand' size='5' value='$dmax' alt='Wat is de maximale afstand'> km<br>\n";	
+	echo "<br>\n";
+	
 	echo "<input type='submit' name='test' value='$strPreview'>&nbsp;&nbsp;<input type='submit' name='opslaan' value='$strSave'><br>\n";
 	echo "</form>\n";
 }

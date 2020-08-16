@@ -17,6 +17,8 @@ function getZoekTermen($id, $dag, $uur, $active) {
 	global $TableZoeken, $TableLichting, $ZoekenUser, $ZoekenActive, $ZoekenID, $LichtingUur, $LichtingTerm, $LichtingDag;
 	$db = connect_db();
 	
+	$ZoekTermen = array();
+	
 	//if($active != 0) {
 	//	// alles wat 'active' is
 	//	$sql		= "SELECT * FROM $TableZoeken WHERE $ZoekenActive = 1";	
@@ -67,7 +69,7 @@ function getZoekTermen($id, $dag, $uur, $active) {
 	//echo '['. $sql .']';
 
 	$result = mysqli_query($db, $sql);	
-	if($row = mysqli_fetch_array($result)) {
+	if($row = mysqli_fetch_array($result)) {			
 		do {
 			if($active == 0 AND $id == 0) {
 				$ZoekTermen[] = $row[$LichtingTerm];
@@ -107,21 +109,6 @@ function getURL($id) {
 	return $URL;
 }
 
-/*
-function addPCtoURL($URL, $postcode) {
-	$URLelementen = parse_url($URL);
-	$ZoekElementen = proper_parse_str($URLelementen['query']);
-	
-	if(!array_key_exists('postcode', $ZoekElementen) AND count($URLelementen) == 3) {
-		$URL = $URL.'?postcode='.$postcode;
-	} elseif(!array_key_exists('postcode', $ZoekElementen) AND count($URLelementen) > 3) {
-		$URL = $URL.'&postcode='.$postcode;
-	}
-	
-	return $URL;
-}
-*/
-
 
 function addPCtoURL($URL, $postcode) {
 	if(strpos($URL, '#')) {
@@ -151,30 +138,6 @@ function addPage2URL($URL, $p) {
 		
 	return implode('/', $URL);
 }
-
-/*
-function makeURL($q, $ts, $g, $u, $pmin, $pmax, $np, $loc_type, $postcode, $distance, $pv, $pp, $f, $or, $not) {
-	$URL = "http://www.marktplaats.nl/z.html?";
-	//query=HTC+Desire+-Z&categoryId=1685&postcode=2012&distance=15000
-	
-	if($q != '')										$URL .= "query=". urlencode($q).($not != '' ? "+-". urlencode($not) : '')."&";
-	if($or != 0)										$URL .= "or_query_words=$or&";	
-	if($ts != 0)										$URL .= "ts=$ts&";
-	if($g != 0)											$URL .= "g=$g&";
-	if($u != 0)											$URL .= "categoryId=$u&";
-	if($pmin != 0 AND $pmin != '')	$URL .= "pmin=$pmin&";
-	if($pmax != 0 AND $pmax != '')	$URL .= "pmax=$pmax&";
-	if($np == 1)										$URL .= "np=$np&";
-	if($loc_type != '')							$URL .= "loc_type=$loc_type&";
-	if($postcode != 0)							$URL .= "postcode=$postcode&";
-	if($loc_type == 'zip' AND $distance != 0)	$URL .= "distance=$distance&";
-	if($loc_type == 'province' AND $pv != 0)	$URL .= "pv=$pv&";
-	if($pp != 0 AND $pp != '')			$URL .= "pp=$pp&";
-	if($f != 0 AND $f != 0)					$URL .= "f=$f&";
-		
-	return $URL;
-}
-*/
 
 function getBasicMarktplaatsData($string) {	
 	$statusArray = array('Nieuw', 'Gebruikt', 'Zo goed als nieuw');
@@ -217,46 +180,28 @@ function getBasicMarktplaatsData($string) {
 
 
 function getAdvancedMarktplaatsData($string) {
-	$data					= file_get_contents($string);
-	//$bezoeken			= getString('<span id="view-count">', '</span>', $data, 0);	
-	//$DatumAll			= getString('sinds</span>', '</span>', $bezoeken[1], 0); 
-	//$id						= getString('data-advertisement-id="', '"', $DatumAll[1], 0);
-	//$verkoper_id	= getString('<a href="https://www.marktplaats.nl/verkopers/', '.html', $data, 0); 
-	//$url_short		= getString('<input class="mp-Input" type="text" value="', '">', $data, 0);
-	//$postcode			= getString("['ad.zipcode']='", "';", $data, 0); 
-	//$verkoper			= getString('<h2 class="name mp-text-header3" title="', '">', $verkoper_id[1], 0); 
+	$latitude = $longitude = array('');
+	
+	$data				= file_get_contents($string);
 	$omschrijving	= getString('<div id="vip-ad-description" class="wrapped">', '</div>', $data, 0); 
+	$gallery		= getString('data-images-l="', '"', $data, 0); 
+	$thumbs			= explode("&", $gallery[0]); 
 	
+	if(strpos($data, 'lat="'))		$latitude		= getString('lat="', '"', $data, 0); 
+	if(strpos($data, 'long="'))		$longitude	= getString('long="', '"', $data, 0); 
 		
-	/*	 
-	if(strpos($data, '<nobr><small>')) { 
-		$prijs_add		= getString("<nobr><small>(", ")</small></nobr>", $data, 0); 
-	} else { 
-		$prijs_add[0] = ''; 
-	}
-	*/ 
-			 
-	$gallery	= getString('data-images-l="', '"', $data, 0); 
-	$thumbs		= explode("&", $gallery[0]); 
-	
 	if($thumbs[0] != '') {
-		foreach($thumbs as $thumb) {
-			//$picture[] = str_replace ("_84.JPG", "_82.JPG", $thumb); 
+		foreach($thumbs as $thumb) {			
 			$picture[] = str_replace ('_84.JPG', '_82.JPG', str_replace('http://', '//', $thumb));
 		}
 	} else {
 		$picture[] = '//s.marktplaats.com/aurora/res/images/no_photo.jpg'; 
 	}
 	
-	//$Output['id']						=	formatString($id[0]); 
-	//$Output['URL_short']		=	formatString($url_short[0]);
 	$Output['picture']			=	implode("|", $picture); 
 	$Output['descr_long']		=	formatString($omschrijving[0]); 
-	//$Output['price_add']		=	formatString($prijs_add[0]);
-	//$Output['date']					=	convertDate(formatString($DatumAll[0])); 
-	//$Output['visits']				=	formatString($bezoeken[0]); 
-	//$Output['verkoper']			=	formatString($verkoper[0]); 
-	//$Output['verkoper_id']	=	formatString($verkoper_id[0]); 
+	$Output['lat']					=	$latitude[0];
+	$Output['long']					=	$longitude[0];
 
 	return $Output;	
 }
@@ -410,59 +355,6 @@ function formatPrice($price, $euro = true) {
 	}
 }
 
-/*
-function convertDate($date) {
-	//echo "(". substr($date, 10, 2) .", ". substr($date, 13, 2) .", 0, ". substr($date, 3, 2) .", ". substr($date, 0, 2) .", 20". substr($date, 6, 2) .")";
-
-	$delen = explode(',', $date);
-	
-	$datumDelen = explode(' ', $delen[0]);
-	$tijdDelen = explode(':', $delen[1]);
-	
-	switch ($datumDelen[1]) {
-		case 'jan.':
-			$maand = 1;
-			break;
-		case 'feb.':
-			$maand = 2;
-			break;
-		case 'mrt.':
-			$maand = 3;
-			break;
-		case 'apr.':
-			$maand = 4;
-			break;
-		case 'mei':
-			$maand = 5;
-			break;
-		case 'jun.':
-			$maand = 6;
-			break;
-		case 'jul.':
-			$maand = 7;
-			break;
-		case 'aug.':
-			$maand = 8;
-			break;
-		case 'sep.':
-			$maand = 9;
-			break;
-		case 'okt.':
-			$maand = 10;
-			break;
-		case 'nov.':
-			$maand = 11;
-			break;
-		case 'dec.':
-			$maand = 12;
-			break;
-	}
-		
-	return mktime($tijdDelen[0], $tijdDelen[1], 0, $maand, $datumDelen[0], '20'. substr($datumDelen[2], -2));
-}
-*/
-
-
 function getMaand($maand) {
 	$maand = strtolower($maand);
 	
@@ -529,67 +421,29 @@ function getAdTitle($id) {
 	}
 }
 
-/*
-function getGroepen($id) {
-	global $TableGroep, $TableSubGroep, $SubGroepGroep, $GroepGroep, $GroepNaam, $SubGroepSubGroep, $SubGroepNaam;
-	
-	$db = connect_db();
-	
-	if($id == '') {
-		$sql = "SELECT * FROM $TableGroep";
-	} else {
-		$sql = "SELECT * FROM $TableSubGroep WHERE $SubGroepGroep = $id";
-	}
-	
-	$result = mysqli_query($db, $sql);
-	
-	if($row = mysqli_fetch_array($result)) {
-		do {
-			if($id == '') {
-				$key		= $row[$GroepGroep];
-				$Groepen[$key]	= $row[$GroepNaam];
-			} else {
-				$key		= $row[$SubGroepSubGroep];
-				$Groepen[$key]	= $row[$SubGroepNaam];
-			}
-		}
-		while($row = mysqli_fetch_array($result));
-	}
-	
-	return $Groepen;
-}
-*/
-
 function getZoekData($id) {
-	global $TableZoeken, $TableLichting, $ZoekenID, $ZoekenActive, $ZoekenUser, $ZoekenTerm, $ZoekenOr, $ZoekenNot, $ZoekenTitel, $ZoekenGroep, $ZoekenSubGroep, $ZoekenPrijsMin, $ZoekenPrijsMax, $ZoekenGeenPrijs, $ZoekenLokatie, $ZoekenPostcode, $ZoekenAfstand, $ZoekenProvincie, $ZoekenFoto, $ZoekenPayPal, $ZoekenKey, $LichtingTerm, $LichtingUur, $LichtingDag, $ZoekenCC, $ZoekenNaam, $ZoekenURL;
+	global $TableZoeken, $ZoekenID, $ZoekenActive, $ZoekenUser, $ZoekenPrijsMin, $ZoekenPrijsMax, $ZoekenAfstandMin, $ZoekenAfstandMax, $ZoekenKey, $ZoekenCC, $ZoekenNaam, $ZoekenURL;
+	global $TableLichting, $LichtingTerm, $LichtingUur, $LichtingDag;
 	
 	$db = connect_db();
 	$sql	= "SELECT * FROM $TableZoeken WHERE $ZoekenID = $id";	
 	$result = mysqli_query($db, $sql);
 	$row = mysqli_fetch_array($result);
 	
+	# ALTER TABLE `marktplaats_zoeken` ADD `pmin` INT(5) NULL AFTER `url`, ADD `pmax` INT(5) NULL AFTER `pmin`;
+	# ALTER TABLE `marktplaats_zoeken` ADD `dmin` INT(5) NULL AFTER `pmax`, ADD `dmax` INT(5) NULL AFTER `dmin`;
+			
 	$data['active']		= $row[$ZoekenActive];
 	$data['user']			= $row[$ZoekenUser];
-	//$data['q']				= $row[$ZoekenTerm];
-	//$data['ts']				= $row[$ZoekenTitel];
-	//$data['g']				= $row[$ZoekenGroep];
-	//$data['u']				= $row[$ZoekenSubGroep];
-	//$data['pmin']			= $row[$ZoekenPrijsMin];
-	//$data['pmax']			= $row[$ZoekenPrijsMax];
-	//$data['np']				= $row[$ZoekenGeenPrijs];
-	//$data['loc_type']	= $row[$ZoekenLokatie];
-	//$data['postcode']	= $row[$ZoekenPostcode];
-	//$data['distance']	= $row[$ZoekenAfstand];
-	//$data['pv']				= $row[$ZoekenProvincie];
-	//$data['pp']				= $row[$ZoekenPayPal]; 
-	//$data['f']				= $row[$ZoekenFoto];
-	//$data['or']				= $row[$ZoekenOr];
-	//$data['not']			= $row[$ZoekenNot];
+	$data['pmin']			= $row[$ZoekenPrijsMin];
+	$data['pmax']			= $row[$ZoekenPrijsMax];
+	$data['dmin']			= $row[$ZoekenAfstandMin];
+	$data['dmax']			= $row[$ZoekenAfstandMax];
 	$data['key']			= $row[$ZoekenKey];	
 	$data['naam']			= $row[$ZoekenNaam];
 	$data['CC']				= $row[$ZoekenCC];
 	$data['URL']			= $row[$ZoekenURL];
-	
+		
 	$sql		= "SELECT * FROM $TableLichting WHERE $LichtingTerm = $id";
 	$result = mysqli_query($db, $sql);
 	if($row = mysqli_fetch_array($result)) {
@@ -607,17 +461,18 @@ function getZoekData($id) {
 	return $data;
 }
 
-function saveURL($id, $user, $active, $url, $CC, $naam, $dag, $uur) {
-	global $TableZoeken, $TableLichting, $ZoekenActive, $ZoekenUser, $ZoekenID, $ZoekenKey, $ZoekenCC, $ZoekenNaam, $ZoekenURL, $LichtingTerm, $LichtingUur, $LichtingDag;
-	$db	= $db = connect_db();
+function saveURL($id, $user, $active, $url, $CC, $naam, $pmin, $pmax, $dmin, $dmax, $dag, $uur) {
+	global $TableZoeken, $ZoekenActive, $ZoekenUser, $ZoekenID, $ZoekenKey, $ZoekenCC, $ZoekenNaam, $ZoekenURL, $ZoekenPrijsMin, $ZoekenPrijsMax, $ZoekenAfstandMin, $ZoekenAfstandMax;
+	global $TableLichting, $LichtingTerm, $LichtingUur, $LichtingDag;
+	$db	= connect_db();
 	
 	if($id == '') {
 		$key = generateKey(8);
-		$sql = "INSERT INTO $TableZoeken ($ZoekenActive, $ZoekenKey, $ZoekenUser, $ZoekenCC, $ZoekenURL, $ZoekenNaam) VALUES ('$active', '$key', '$user', '$CC', '$url', '$naam')";
+		$sql = "INSERT INTO $TableZoeken ($ZoekenActive, $ZoekenKey, $ZoekenUser, $ZoekenCC, $ZoekenURL, $ZoekenNaam, $ZoekenPrijsMin, $ZoekenPrijsMax, $ZoekenAfstandMin, $ZoekenAfstandMax) VALUES ('$active', '$key', '$user', '$CC', '$url', '$naam', $pmin, $pmax, $dmin, $dmax)";
 	} else {
-		$sql = "UPDATE $TableZoeken SET $ZoekenActive = '$active', $ZoekenUser = '$user', $ZoekenCC = '$CC', $ZoekenURL = '$url', $ZoekenNaam = '$naam' WHERE $ZoekenID = '$id'";
-	}	
-	
+		$sql = "UPDATE $TableZoeken SET $ZoekenActive = '$active', $ZoekenUser = '$user', $ZoekenCC = '$CC', `$ZoekenURL` = '$url', $ZoekenNaam = '$naam', $ZoekenPrijsMin = ". ($pmin == '' ? 'NULL' : $pmin) .", $ZoekenPrijsMax = ". ($pmax == '' ? 'NULL' : $pmax) .", $ZoekenAfstandMin = ". ($dmin == '' ? 'NULL' : $dmin) .", $ZoekenAfstandMax = ". ($dmax == '' ? 'NULL' : $dmax) ." WHERE $ZoekenID = '$id'";
+	}
+			
 	if(!mysqli_query($db,$sql)) {
 		echo "[$sql]";
 	} elseif($id == '') {
@@ -739,22 +594,6 @@ function getLogData($begin, $eind, $id, $term, $aantal) {
 	return $data;	
 }
 
-/*
-function getNumberOfAds($term, $old) {
-	global $TableData, $DataMarktplaatsID, $DataZoekterm, $DataChanged, $OudeAdvTijd;
-		
-	$db = connect_db();	
-	$sql	 = "SELECT * FROM $TableData WHERE $DataZoekterm = '$term' ";
-	
-	if($old) {
-		$tijd = time() - $OudeAdvTijd;
-		$sql	.= "AND $DataChanged < $tijd";
-	}
-	
-	$result = mysqli_query($db, $sql);	
-	return mysqli_num_rows($result);
-}
-*/
 
 function getAds($term, $old) {
 	global $TableData, $DataMarktplaatsID, $DataZoekterm, $DataChanged, $DataNotSeen;
@@ -816,7 +655,7 @@ function cleanupLog() {
 }
 
 function getUserData($id) {
-	global $TableUsers, $UsersID, $UsersWachtwoord, $UsersNaam, $UsersMail, $UsersHTML, $UsersRSS, $UsersPostcode;
+	global $TableUsers, $UsersID, $UsersWachtwoord, $UsersNaam, $UsersMail, $UsersHTML, $UsersRSS, $UsersPostcode, $UsersLatitude, $UsersLongitude;
 	
 	$db 		= $db = connect_db();
 	$sql		= "SELECT * FROM $TableUsers WHERE $UsersID = ". $id;
@@ -829,6 +668,9 @@ function getUserData($id) {
 	$data['HTML']				= $row[$UsersHTML];
 	$data['RSS']				= $row[$UsersRSS];
 	$data['postcode']		= $row[$UsersPostcode];
+	$data['lat']				= $row[$UsersLatitude];
+	$data['long']				= $row[$UsersLongitude];
+	$data['coord']			= array($data['long'], $data['lat']);
 		
 	return $data;	
 }
@@ -990,37 +832,6 @@ function getNotepadEntry($term, $marktplaats_id) {
 	return $Output;
 }
 
-function proper_parse_str($str) {
-  # result array
-  $arr = array();
-
-  # split on outer delimiter
-  $pairs = explode('&', $str);
-
-  # loop through each pair
-  foreach ($pairs as $i) {
-    # split into name and value
-    list($name,$value) = explode('=', $i, 2);
-   
-    # if name already exists
-    if( isset($arr[$name]) ) {
-      # stick multiple values into an array
-      if( is_array($arr[$name]) ) {
-        $arr[$name][] = $value;
-      }
-      else {
-        $arr[$name] = array($arr[$name], $value);
-      }
-    }
-    # otherwise, simply stick it in a scalar
-    else {
-      $arr[$name] = $value;
-    }
-  }
-
-  # return result array
-  return $arr;
-}
 
 function send2Pushover($dataArray) {
 	global $PushoverKey, $PushoverToken;
@@ -1037,6 +848,18 @@ function send2Pushover($dataArray) {
 		$push->setDebug(true);
 		$push->setTimestamp(time());
 		$push->send();		
+	}
+}
+
+function showArray($keys, $array) {
+	foreach($array as $key => $value) {
+		$newKey = $keys.'['.$key .']';
+		
+		if(is_array($value)) {
+			showArray($newKey, $value);
+		} else {
+			echo $newKey .' -> '. $value .'<br>';
+		}
 	}
 }
 ?>

@@ -21,6 +21,10 @@ $ZoekenNaam			 = "logische_naam";
 $ZoekenCC				 = "CC_mail";
 $ZoekenKey				= "sleutel"; // nog toevoegen in inc_install
 $ZoekenURL				= "url"; // nog toevoegen in inc_install
+$ZoekenPrijsMin		= "pmin";
+$ZoekenPrijsMax		= "pmax";
+$ZoekenAfstandMin	= "dmin";
+$ZoekenAfstandMax	= "dmax";
 
 $TableData					= $dbTablePrefix."data";
 $DataID							= "id";
@@ -61,6 +65,8 @@ $UsersMail				= 'mail';
 $UsersHTML				= 'html';
 $UsersRSS					= 'rss';   // nog toevoegen in inc_install
 $UsersPostcode		= 'postcode';
+$UsersLatitude		= 'latitude';
+$UsersLongitude		= 'longitude';
 $UsersLevel				= 'level';
 
 $TableLichting		= $dbTablePrefix.'lichting';
