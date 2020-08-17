@@ -670,7 +670,7 @@ function getUserData($id) {
 	$data['postcode']		= $row[$UsersPostcode];
 	$data['lat']				= $row[$UsersLatitude];
 	$data['long']				= $row[$UsersLongitude];
-	$data['coord']			= array($data['long'], $data['lat']);
+	$data['coord']			= array($data['lat'], $data['long']);
 		
 	return $data;	
 }

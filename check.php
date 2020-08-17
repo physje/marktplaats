@@ -223,19 +223,20 @@ if($Checken) {
        			$detailData = getAdvancedMarktplaatsData('https://www.marktplaats.nl'.$basicData['URL']);
        			$data = array_merge($basicData, $detailData);
        			
+       			# Staat de coordinaten in de advertentie of moet er even worden gezocht
+       			if($detailData['long'] != '' AND $detailData['lat'] != '') {
+       				$coord = array($detailData['lat'], $detailData['long']);
+						} else {
+							$coord = getCoordinates('', '', $data['plaats']);							
+						}
+																										
+						$afstand		= getDistance($UserData['coord'], $coord);
+						$data['afstand'] = round($afstand/1000);						
+       			
        			# Doe een 2de check of deze op basis van afstand moet worden opgenomen in de mail
        			if($ZoekData['dmin'] != '' OR $ZoekData['dmax'] != '') {
 							$opnemenInMail = false;
-							
-							# Staat de coordinaten in de advertentie of moet er even worden gezocht
-							if($detailData['long'] != '' AND $detailData['lat'] != '') {
-								$coord = array($detailData['long'], $detailData['lat']);
-							} else {
-								$coord = getCoordinates('', '', $data['plaats']);								
-							}
-							
-							$afstand		= getDistance($UserData['coord'], $coord);
-							
+														
 							if($ZoekData['dmin'] != '') {
 								if($ZoekData['dmax'] != '') {
 									if($afstand > (1000*$ZoekData['dmin']) AND $afstand < (1000*$ZoekData['dmax'])) {
