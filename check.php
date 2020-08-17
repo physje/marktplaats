@@ -164,28 +164,6 @@ if($Checken) {
 					//$detailData['visits']		=	formatString($bezoeken[0]); 
 					$basicData['verkoper']		=	$advertentie['sellerInformation']['sellerName']; 
 					$basicData['verkoper_id']	= $advertentie['sellerInformation']['sellerId'];
-					
-					# Doe een 1ste check of deze op basis van prijs moet worden opgenomen in de mail
-					if($ZoekData['pmin'] != '' OR $ZoekData['pmax'] != '') {
-						$opnemenInMail = false;
-						
-						if($ZoekData['pmin'] != '') {
-							if($ZoekData['pmax'] != '') {
-								if($basicData['price'] > (100*$ZoekData['pmin']) AND $basicData['price'] < (100*$ZoekData['pmax'])) {
-									$opnemenInMail = true;
-								}
-							} elseif($basicData['price'] > (100*$ZoekData['pmin'])) {
-								$opnemenInMail = true;
-							}
-       			}
-       			
-       			if($ZoekData['pmax'] != '') {
-       				if($basicData['price'] < (100*$ZoekData['pmin'])) {
-       					$opnemenInMail = true;
-       				}
-       			}       			
-       		}
-       		
     			    			
     			# Als hij nog niet bekend is, moet er verder gezocht worden      
     			if(!NewItem($basicData['key'], $term)) {
@@ -216,6 +194,36 @@ if($Checken) {
        			}
        		} else {
        			$newItem = true;       			
+       		}
+
+
+					# Doe een 1ste check of deze op basis van prijs moet worden opgenomen in de mail
+					if($ZoekData['pmin'] != '' OR $ZoekData['pmax'] != '') {
+						$opnemenInMail = false;
+						
+						# Bij gereserveerd moet er gecheckt worden met de oude prijs
+						# niet de huidige, die staat op -1
+						if($data['price_add'] == 'RESERVED' AND $changedPrijs) {
+							$priceToCheck = $oldData['prijs'];
+						} else {
+							$priceToCheck = $basicData['price'];
+						}
+						
+						if($ZoekData['pmin'] != '') {
+							if($ZoekData['pmax'] != '') {
+								if($priceToCheck > (100*$ZoekData['pmin']) AND $priceToCheck < (100*$ZoekData['pmax'])) {
+									$opnemenInMail = true;
+								}
+							} elseif($priceToCheck > (100*$ZoekData['pmin'])) {
+								$opnemenInMail = true;
+							}
+       			}
+       			
+       			if($ZoekData['pmax'] != '') {
+       				if($priceToCheck < (100*$ZoekData['pmin'])) {
+       					$opnemenInMail = true;
+       				}
+       			}
        		}
        		       		       		
        		# Bij een nieuwe of gewijzigde advertenties moet de pagina van de advertentie worden ingelezen
@@ -389,7 +397,9 @@ if($Checken) {
      			  'transport' => $changedTransport
      			 );
      			 
-     			 AddUpdateData($data, $term, $status);
+     			 if($debug == 0) {
+     			 	AddUpdateData($data, $term, $status);
+     			}
      		} elseif(!isset($advertentie['location']['cityName']) AND $debug != 0) {
      			echo $marktplaatsID. ": geen plaatsnaam bekend<br>";
      		} elseif(in_array($marktplaatsID, $foundIDs) AND $debug != 0) {
