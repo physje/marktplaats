@@ -32,7 +32,7 @@ if(isset($_REQUEST['forcedID'])) {
  $Termen  = getZoekTermen('', date("w"), date("H"), 1);
 }
 
-$debug = 0;
+$debug = 1;
 
 if($Checken) { 
 	foreach($Termen as $term) {
@@ -105,7 +105,7 @@ if($Checken) {
    		# Alleen de relevante advertenties inlezen
    		$string = getString('<script id="__NEXT_DATA__" type="application/json">', '</script>', $inhoud, 0);   
    		$json = json_decode($string[0], true);
-   		   		
+   		   		   		   		
    		# Array maken met losse advertenties
    		$listings = $json['props']['pageProps']['searchRequestAndResponse']['listings'];
    		
@@ -131,7 +131,7 @@ if($Checken) {
     		if($debug == 2) {
     			echo '<hr>';
     			echo '[$i = '. $i .']<br>';
-    			echo showArray('', $advertentie).'<br>';
+    			echo showArray('', $advertentie).'<br>';    			
     		} 
     		
     		# Alleen als er een plaatsnaam bekend is moet die geprocesed worden.
@@ -167,7 +167,7 @@ if($Checken) {
     			    			
     			# Als hij nog niet bekend is, moet er verder gezocht worden      
     			if(!NewItem($basicData['key'], $term)) {
-    				$oldData = getPageDataByMarktplaatsID($basicData['key']);
+    				$oldData = getPageDataByMarktplaatsID($basicData['key'], $term);
        
     		   	# Wijziging in titel
        			if(urldecode($oldData['title']) != $basicData['title']) {
@@ -182,13 +182,14 @@ if($Checken) {
        			}
        			       			
        			# Wijziging in transport
-       			if($oldData['transport'] != $basicData['transport']) {
+       			if($basicData['transport'] != '' AND $oldData['transport'] != $basicData['transport']) {
+       				//echo $basicData['key']. ' van |'. $oldData['transport'] .'| naar |'. $basicData['transport'] .'|';
        			  $changedTransport = true;
        			  $changedData = true;
        			}
        			       			
        			# Wijziging in status
-       			if($oldData['status'] != $basicData['status']) {
+       			if($basicData['status'] != '' AND $oldData['status'] != $basicData['status']) {
        			  $changedStatus = true;
        			  $changedData = true;
        			}

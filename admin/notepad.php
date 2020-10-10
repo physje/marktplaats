@@ -56,7 +56,7 @@ foreach($Termen as $term) {
 	
 	if(count($Entrys) > 0) {
 		foreach($Entrys as $key => $value) {
-			$PageData		= getPageDataByMarktplaatsID($value['id']);
+			$PageData		= getPageDataByMarktplaatsID($value['id'], $term);
 			$Berichten	= getNotepadEntry(0, $value['id']);
 			
 			if($PageData['picture'] == '') {

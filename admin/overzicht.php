@@ -40,7 +40,7 @@ if(isset($_REQUEST['term'])) {
 	echo "<tr>\n";
 	
 	foreach($advertenties as $value) {
-		$pageData = getPageDataByMarktplaatsID($value);
+		$pageData = getPageDataByMarktplaatsID($value, $_REQUEST['term']);
 		$active = $pageData['active'];
 		
 		echo "<tr>\n";

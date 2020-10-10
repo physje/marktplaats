@@ -29,7 +29,7 @@ if(isset($_REQUEST['term'])) {
         $ads = getAds($term, false);
         
         foreach($ads as $advertentie) {
-        	$data = getPageDataByMarktplaatsID($advertentie);
+        	$data = getPageDataByMarktplaatsID($advertentie, $term);
         	$veld = array();
         	
         	if($_POST['koppen']['db-id'] == 1)      $veld[] = $data['ID'];

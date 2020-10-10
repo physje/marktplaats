@@ -258,12 +258,12 @@ function AddUpdateData($data, $term, $status) {
 
 
 function AddData($data, $term) {
-	global $TableData, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataTitleOorsprong, $DataBeschrijving, $DataDatum, $DataZoekterm, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataPrice, $DataPriceOorsprong, $DataPlaats, $DataAfstand, $DataStatus, $DataTransport;
+	global $TableData, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataTitleOorsprong, $DataBeschrijving, $DataDatum, $DataZoekterm, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataPrice, $DataPriceOorsprong, $DataPlaats, $DataAfstand, $DataStatus, $DataTransport, $DataLatitude, $DataLongitude;
 	
 	$tijd	= time();
 	
 	$db 	= connect_db();
-	$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataTitleOorsprong, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataPriceOorsprong, $DataPlaats, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged, $DataStatus, $DataTransport) VALUES (". $data['key'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."', '". urlencode($data['title']) ."', '". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."', '". $data['price'] ."', '". urlencode($data['plaats']) ."', '". $data['afstand'] ."', $term, $tijd, $tijd, '". $data['status'] ."', '". $data['transport'] ."')";
+	$sql	= "INSERT INTO $TableData ($DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataTitleOorsprong, $DataBeschrijving, $DataVerkoper, $DataDatum, $DataPlaatje, $DataPrice, $DataPriceOorsprong, $DataPlaats, $DataAfstand, $DataZoekterm, $DataAdded, $DataChanged, $DataStatus, $DataTransport, $DataLatitude, $DataLongitude) VALUES (". $data['key'] .", '1', '". urlencode($data['URL']) ."', '". urlencode($data['title']) ."', '". urlencode($data['title']) ."', '". urlencode($data['descr_long']) ."','". urlencode($data['verkoper']) ."', ". $data['date'] .", '". $data['picture'] ."', '". $data['price'] ."', '". $data['price'] ."', '". urlencode($data['plaats']) ."', '". $data['afstand'] ."', $term, $tijd, $tijd, '". $data['status'] ."', '". $data['transport'] ."', '". $data['lat'] ."', '". $data['long'] ."')";
 	
 	if(mysqli_query($db,$sql)) {
 		writeToLog($term, "Toegevoegd", $data['key']);
@@ -297,7 +297,9 @@ function changeData($data, $term) {
 	
 	$db = connect_db();	
 	$sql	= "UPDATE $TableData SET $DataActive = '1', $DataTitle = '". urlencode($data['title']) ."', $DataPlaats = '". urlencode($data['plaats']) ."', $DataPrice = '". $data['price'] ."', $DataStatus = '". $data['status'] ."', $DataTransport = '". $data['transport'] ."', $DataChanged = $tijd, $DataNotSeen = '0'	WHERE $DataMarktplaatsID = ". $data['key'];
-		
+	
+	echo $sql;
+			
 	if(mysqli_query($db,$sql)) {
 		writeToLog($term, "Gewijzigd", $data['key']);
 	} else {
@@ -468,7 +470,7 @@ function saveURL($id, $user, $active, $url, $CC, $naam, $pmin, $pmax, $dmin, $dm
 	
 	if($id == '') {
 		$key = generateKey(8);
-		$sql = "INSERT INTO $TableZoeken ($ZoekenActive, $ZoekenKey, $ZoekenUser, $ZoekenCC, $ZoekenURL, $ZoekenNaam, $ZoekenPrijsMin, $ZoekenPrijsMax, $ZoekenAfstandMin, $ZoekenAfstandMax) VALUES ('$active', '$key', '$user', '$CC', '$url', '$naam', $pmin, $pmax, $dmin, $dmax)";
+		$sql = "INSERT INTO $TableZoeken ($ZoekenActive, $ZoekenKey, $ZoekenUser, $ZoekenCC, $ZoekenURL, $ZoekenNaam, $ZoekenPrijsMin, $ZoekenPrijsMax, $ZoekenAfstandMin, $ZoekenAfstandMax) VALUES ('$active', '$key', '$user', '$CC', '$url', '$naam', ". ($pmin == '' ? 'NULL' : $pmin) .", ". ($pmax == '' ? 'NULL' : $pmax) .", ". ($dmin == '' ? 'NULL' : $dmin) .", ". ($dmax == '' ? 'NULL' : $dmax) .")";
 	} else {
 		$sql = "UPDATE $TableZoeken SET $ZoekenActive = '$active', $ZoekenUser = '$user', $ZoekenCC = '$CC', `$ZoekenURL` = '$url', $ZoekenNaam = '$naam', $ZoekenPrijsMin = ". ($pmin == '' ? 'NULL' : $pmin) .", $ZoekenPrijsMax = ". ($pmax == '' ? 'NULL' : $pmax) .", $ZoekenAfstandMin = ". ($dmin == '' ? 'NULL' : $dmin) .", $ZoekenAfstandMax = ". ($dmax == '' ? 'NULL' : $dmax) ." WHERE $ZoekenID = '$id'";
 	}
@@ -723,21 +725,21 @@ function makeRSSFeed($term, $prefix) {
 }
 
 function getPageData($id) {
-	global $TableData, $DataID, $DataMarktplaatsID;
+	global $TableData, $DataID, $DataZoekterm, $DataMarktplaatsID;
 	
 	$db 		= $db = connect_db();	
 	$sql		= "SELECT * FROM $TableData WHERE $DataID = $id";
 	$result	= mysqli_query($db,$sql);
 	$row = mysqli_fetch_array($result);
 	
-	return getPageDataByMarktplaatsID($row[$DataMarktplaatsID]);
+	return getPageDataByMarktplaatsID($row[$DataMarktplaatsID], $row[$DataZoekterm]);
 }
 
-function getPageDataByMarktplaatsID($id) {
-	global $TableData, $DataID, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataAfstand, $DataPrice, $DataPlaats, $DataNotSeen, $DataTitleOorsprong, $DataPriceOorsprong, $DataStatus, $DataTransport;
+function getPageDataByMarktplaatsID($id, $term) {
+	global $TableData, $DataID, $DataZoekterm, $DataMarktplaatsID, $DataActive, $DataURL, $DataTitle, $DataBeschrijving, $DataDatum, $DataAdded, $DataChanged, $DataVerkoper, $DataPlaatje, $DataAfstand, $DataPrice, $DataPlaats, $DataNotSeen, $DataTitleOorsprong, $DataPriceOorsprong, $DataStatus, $DataTransport;
 	
 	$db 		= $db = connect_db();	
-	$sql		= "SELECT * FROM $TableData WHERE $DataMarktplaatsID = $id";	
+	$sql		= "SELECT * FROM $TableData WHERE $DataMarktplaatsID = $id AND $DataZoekterm = $term";	
 	$result	= mysqli_query($db,$sql);
 		
 	if($row = mysqli_fetch_array($result)) {
