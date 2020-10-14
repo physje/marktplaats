@@ -32,7 +32,7 @@ if(isset($_REQUEST['forcedID'])) {
  $Termen  = getZoekTermen('', date("w"), date("H"), 1);
 }
 
-$debug = 1;
+$debug = 0;
 
 if($Checken) { 
 	foreach($Termen as $term) {
