@@ -229,6 +229,7 @@ if($Checken) {
        		       		       		
        		# Bij een nieuwe of gewijzigde advertenties moet de pagina van de advertentie worden ingelezen
        		if(($newItem OR $changedData) AND $opnemenInMail) {
+       			# Er zijn verschillende soorten advertenties, daar wordt in de functie onderscheid tussen gemaakt
        			$detailData = getAdvancedMarktplaatsData('https://www.marktplaats.nl'.$basicData['URL']);
        			$data = array_merge($basicData, $detailData);
        			

@@ -181,18 +181,37 @@ function getBasicMarktplaatsData($string) {
 
 function getAdvancedMarktplaatsData($string) {
 	$latitude = $longitude = array('');
-	
-	$data				= file_get_contents($string);
-	$omschrijving	= getString('<div id="vip-ad-description" class="wrapped">', '</div>', $data, 0); 
-	$gallery		= getString('data-images-l="', '"', $data, 0); 
-	$thumbs			= explode("&", $gallery[0]); 
-	
-	if(strpos($data, 'lat="'))		$latitude		= getString('lat="', '"', $data, 0); 
-	if(strpos($data, 'long="'))		$longitude	= getString('long="', '"', $data, 0); 
 		
+	$data				= file_get_contents($string);
+	
+	if(strpos($data, '<div class="Description-description" data-collapsable="description">')) {
+		#echo 'Type 1 | ';
+		$omschrijving	= getString('<div class="Description-description" data-collapsable="description"><div>', '<div id="description-button-root">', $data, 0);
+		$gallery		= getString('{"imageUrls":[', ']', $data, 0);
+		$thumbs			= explode(",", $gallery[0]);		
+		if(strpos($data, '"latitude"'))		$latitude		= getString('latitude":', ',"', $data, 0);
+		if(strpos($data, '"longitude"'))	$longitude	= getString('longitude":', '}}', $data, 0);
+		
+	} else {
+		#echo 'Type 2 | ';
+		$omschrijving	= getString('<div id="vip-ad-description" class="wrapped">', '</div>', $data, 0); 
+		$gallery		= getString('data-images-l="', '"', $data, 0); 
+		$thumbs			= explode("&", $gallery[0]);		
+			
+		if(strpos($data, 'lat="'))		$latitude		= getString('lat="', '"', $data, 0); 
+		if(strpos($data, 'long="'))		$longitude	= getString('long="', '"', $data, 0);	
+	}
+			
 	if($thumbs[0] != '') {
-		foreach($thumbs as $thumb) {			
-			$picture[] = str_replace ('_84.JPG', '_82.JPG', str_replace('http://', '//', $thumb));
+		foreach($thumbs as $thumb) {
+			$temp = $thumb;
+			
+			$temp = str_replace ('"', '', $temp);
+			$temp = str_replace ('http://', '//', $temp);
+			$temp = str_replace ('_#.JPG', '_82.JPG', $temp);
+			$temp = str_replace ('\u002F', '/', $temp);
+			$temp = str_replace ('_84.JPG', '_82.JPG', $temp);
+			$picture[] = $temp;
 		}
 	} else {
 		$picture[] = '//s.marktplaats.com/aurora/res/images/no_photo.jpg'; 
@@ -226,7 +245,7 @@ function NewItem($id, $term) {
 function makeAdsInactive($term) {
 	global $TableData, $DataZoekterm, $DataActive, $DataNotSeen;
 	
-	$db			= $db = connect_db();
+	$db = connect_db();
 	$sql = "UPDATE $TableData SET $DataNotSeen = $DataNotSeen + 1 WHERE $DataZoekterm = $term";
 	$result = mysqli_query($db, $sql);
 	
