@@ -32,7 +32,7 @@ if(isset($_REQUEST['forcedID'])) {
  $Termen  = getZoekTermen('', date("w"), date("H"), 1);
 }
 
-$debug = 0;
+$debug = 1;
 
 if($Checken) { 
 	foreach($Termen as $term) {
@@ -57,41 +57,42 @@ if($Checken) {
 		//$URL = addPCtoURL($URL, $UserData['postcode']);
 		//$URL = addLimit2URL($URL, 100);
 		//$URL .= $URL."&sortBy=SortIndex";
-		
+				
 		# Als er een mail verstuurd moet worden, mail initialiseren
 		if($rss == 0 OR $rss == 2) {
 			$PlainHeader = "";
-   
+     	
    		$HTMLHeader  = "<!--     Deze pagina is onderdeel van $ScriptTitle $Version gemaakt door Matthijs Draijer     -->\n\n";
    		$HTMLHeader .= "<html>\n";
    		$HTMLHeader .= "<head>\n";
-   		$HTMLHeader .= " <link rel='stylesheet' type='text/css' href='$ScriptRoot/include/style_mail.css'>\n";
-   		$HTMLHeader .= " <title>$ScriptTitle $Version</title>\n";
+   		$HTMLHeader .= "	<meta http-equiv='Content-Type' content='text/html;charset=ISO-8859-1'>\n";
+   		$HTMLHeader .= "	<title>$ScriptTitle $Version</title>\n";
+   		$HTMLHeader .= "	<meta name='viewport' content='width=device-width, initial-scale=1'>\n";
+   		$HTMLHeader .= "	<style>\n";   		
+			$HTMLHeader .= "		*{ box-sizing: border-box; }\n";
+			$HTMLHeader .= "		body { background-color:#ECE6D4; font-family: Verdana, Arial; color: #2D476D; font-size: 13px; }\n";
+			$HTMLHeader .= "		.advertentie_blok { width: 480px; background-color:#EAEAEA; margin: auto; border: solid; border-color: #636367; border-width: 1; padding: 10px; margin-bottom:15px; }\n";			$HTMLHeader .= "		.add_titel { font-size: 13px; }\n";
+			$HTMLHeader .= "		.add_seller { font-size: 13px; }\n";
+			$HTMLHeader .= "		.add_location { font-size: 13px; }\n";
+			$HTMLHeader .= "		.add_status { font-size: 13px; }\n";
+			$HTMLHeader .= "		.add_transport { font-size: 13px; }\n";
+			$HTMLHeader .= "		.add_information { font-size: 13px; float:right; padding-top: 5px; padding-bottom: 5px; }\n";
+			$HTMLHeader .= "		.add_price { font-size: 13px; font-weight: bold; }\n";
+			$HTMLHeader .= "		.add_descr { float: none; font-size: 13px; }\n";
+			$HTMLHeader .= "		.add_fotos { padding-top: 10px; column-count: 3; }\n";
+			$HTMLHeader .= "		.add_foto { padding-bottom: 5px; margin: auto; }\n";
+			$HTMLHeader .= "		.a_titel { font-size: 13px; color: #A80000; font-weight: bold; text-decoration: none; }\n";
+			$HTMLHeader .= "		.a_titel:hover { text-decoration: underline; }\n";			
+			$HTMLHeader .= "		.a_seller { font-size: 13px; color: #A80000; font-style: italic; text-decoration: none; }\n";
+			$HTMLHeader .= "		.a_seller:hover { text-decoration: underline; }\n";
+			$HTMLHeader .= "		.a_location { font-size: 13px; color: #A80000; text-decoration: none; }\n";	
+			$HTMLHeader .= "		.a_location:hover { text-decoration: underline; }\n";
+			$HTMLHeader .= "		@media screen and (max-width:500px) {.advertentie_blok { width: 100%; } .add_fotos { column-count: 1; } }\n";   		
+   		$HTMLHeader .= "	</style>";
+   		$HTMLHeader .= "</head>\n";
+   		
    		$HTMLHeader .= "</head>\n";
    		$HTMLHeader .= "<body>\n";
-   		$HTMLHeader .= "<center>\n";
-   		$HTMLHeader .= "<table width='400px' align='center' border=0>\n";
-   	}
-   	
-   	# Als we reclame hebben, moet dat bovenaan de mail getoond worden
-   	if(($rss == 0 OR $rss == 2) AND $reclame != '') {
-   		$HTMLItem  = "<tr>\n"; 
-   		$HTMLItem .= " <td colspan='2' align='center'>". showBlock($reclame) ."</td>";
-   		$HTMLItem .= "</tr>\n";
-   		
-   		$HTMLHeader  .= $HTMLItem;
-   		$PlainHeader .= $reclame;
-   		$extraWitregel = true;
-   	}
-   	
-   	# Na reclame moet er wel witregel komen
-   	if($extraWitregel) {
-   		$HTMLItem  = "<tr>\n"; 
-   		$HTMLItem .= " <td colspan='2' align='center'>&nbsp;</td>";
-   		$HTMLItem .= "</tr>\n";
-   		
-   		$HTMLHeader  .= $HTMLItem;
-   		$PlainHeader .= "\n\n\n";
    	}
    	
    	# Zolang er nog volgende pagina is moet er door gegaan worden met checken.
@@ -199,7 +200,7 @@ if($Checken) {
 
 
 					# Doe een 1ste check of deze op basis van prijs moet worden opgenomen in de mail
-					if($ZoekData['pmin'] != '' OR $ZoekData['pmax'] != '') {
+					if(($ZoekData['pmin'] != '' AND $ZoekData['pmin'] != '0') OR ($ZoekData['pmax'] != '' AND $ZoekData['pmax'] != '0')) {
 						$opnemenInMail = false;
 						
 						# Bij gereserveerd moet er gecheckt worden met de oude prijs
@@ -244,7 +245,7 @@ if($Checken) {
 						$data['afstand'] = round($afstand/1000);						
        			
        			# Doe een 2de check of deze op basis van afstand moet worden opgenomen in de mail
-       			if($ZoekData['dmin'] != '' OR $ZoekData['dmax'] != '') {
+       			if(($ZoekData['dmin'] != '' AND $ZoekData['dmin'] != '0') OR ($ZoekData['dmax'] != '' AND $ZoekData['dmax'] != '0')) {
 							$opnemenInMail = false;
 														
 							if($ZoekData['dmin'] != '') {
@@ -283,7 +284,7 @@ if($Checken) {
        			if($rss == 0 OR $rss == 2) {
        				$pictures = explode('|', $data['picture']);
         
-        			$adInfo = array();
+        			$Item = $adInfo = array();
         			        			
         			if($data['price_add'] == 'RESERVED') {
         				$currentPrice = "<b>Gereserveerd</b>";
@@ -296,63 +297,38 @@ if($Checken) {
         			} else {
         				$currentPrice = "<b>". formatPrice($data['price']) ."</b>";
         			}
-        			
-        			$adInfo[] = $currentPrice.($changedPrijs ? ' <s>'. formatPrice($oldData['prijs']) .'</s>' : '');
-        			$adInfo[] = "<i><a href='http://verkopers.marktplaats.nl/". $data['verkoper_id'] ."'>". $data['verkoper'] ."</a></i>";
-        			$adInfo[] = "<a href='http://maps.google.nl/maps?q=". $data['plaats'] ."%2C+Nederland&z=9'>". $data['plaats'] ."</a>". ($data['afstand'] > 0 ? ' ('. $data['afstand'] ." km)": '');
-        			$adInfo[] = strftime("%a %e %b %H:%M", $data['date']);        
-        			if(isset($data['status']) AND $data['status'] != '')  			$adInfo[] = $data['status'].($changedStatus ? ' <s>'. $oldData['status'] .'</s>' : '');
-        			if(isset($data['transport']) AND $data['transport'] != '')	$adInfo[] = $data['transport'].($changedTransport ? ' <s>'. $oldData['transport'] .'</s>' : '');
-        			      
+        			        			     
         			$PlainItem = strtoupper($data['title']). "\n";
         			$PlainItem .= makeTextBlock($data['descr_long'], 500). "\n";
         			$PlainItem .= $data['price']. "\n";
         			$PlainItem .= $data['plaats']. " (".  $data['afstand'] ." km)\n";
         			$PlainItem .= $data['URL_short'];                
-        			
-        			$Item = "\n";
-        			$Item .= '<!-- '. $data['key'] ." -->\n";
-        			$Item .= "<table width='100%'>\n";
-        			$Item .= "<tr>\n";
-        			$Item .= " <td align='left'><a href='". $data['URL_short'] ."'><b>". $data['title'] .'</b></a>'. ($changedTitle ? ' <s>'. urldecode($oldData['title']) .'</s>' : '') . ($changedData ? ' (gewijzigd)' : '') ."</td>\n";       
-        			$Item .= "</tr>\n";
-        			$Item .= "<tr>\n";
-        			$Item .= " <td align='right'>". implode(' | ', $adInfo) ."</td>\n";
-        			$Item .= "</tr>\n";        
-        			$Item .= "<tr>\n";
-        			$Item .= " <td>". makeTextBlock($data['descr_long'], 500) ."</td>\n";
-        			$Item .= "</tr>\n";
-        			$Item .= "<tr>\n";
-        			$Item .= " <td>\n";
-        			$Item .= " <table>\n";
-        			$Item .= " <tr>\n";
-        			
-        			foreach($pictures as $key => $foto) {
-        			 // 0 -> width | 1 -> height
-        			 $size = getimagesize('http:'.$foto);
-        			 
-        			 if($size[0] > $size[1]) {
-        			  $atr = 'width="100"';
-        			 } else {
-        			  $atr = 'height="100"';
-        			 }
-        			 
-        			 $Item .= "  <td><a href='http:". str_replace('_82.', '_85.', $foto) ."'><img src='http:$foto' $atr></a></td>\n";
-        			 
-        			 if(fmod($key, 3) == 2) {
-        			  $Item .= " </tr>\n";
-        			  $Item .= " <tr>\n";
-        			 }
+		
+ 							# Metadata van de advertentie       			
+        			$adInfo[] = "<span class='add_price'>". $currentPrice.($changedPrijs ? ' <s>'. formatPrice($oldData['prijs']) .'</s>' : '') ."</span>";
+							$adInfo[] = "<span class='add_seller'><a href='http://verkopers.marktplaats.nl/". $data['verkoper_id'] ."' class='a_seller'>". $data['verkoper'] ."</a></span>";
+							$adInfo[] = "<span class='add_location'><a href='http://maps.google.nl/maps?q=". $data['plaats'] ."%2C+Nederland&z=9' class='a_location'>". $data['plaats'] ."</a>". ($data['afstand'] > 0 ? ' ('. $data['afstand'] ." km)": '') ."</span>";
+							$adInfo[] = "<span class='add_online'>". strftime("%a %e %b %H:%M", $data['date']) ."</span>"; 
+							if(isset($data['status']) AND $data['status'] != '')  			$adInfo[] = "<span class='add_status'>".$data['status'].($changedStatus ? ' <s>'. $oldData['status'] .'</s>' : '')."</span>";
+							if(isset($data['transport']) AND $data['transport'] != '')	$adInfo[] = "<span class='add_transport'>". $data['transport'].($changedTransport ? ' <s>'. $oldData['transport'] .'</s>' : '')."</span>";
+    			
+							# Eigenlijke data van de advertentie
+							$Item[] = '<!-- '. $data['key'] ." -->";        			
+							$Item[] = "<div class='advertentie_blok'>";
+							$Item[] = "	<div class='add_titel'><a href='". $data['URL_short'] ."' class='a_titel'>". $data['title'] ."</a>". ($changedTitle ? ' <s>'. urldecode($oldData['title']) .'</s>' : '') . ($changedData ? ' (gewijzigd)' : '') ."</div>";
+							$Item[] = "	<div class='add_information'>";
+							$Item[] = implode(' | ', $adInfo);							
+        			$Item[] = "	</div>";
+        			$Item[] = "	<div class='add_descr'>". makeTextBlock($data['descr_long'], 500) ."</div>";
+        			$Item[] = "	<div class='add_fotos'>";
+        			foreach($pictures as $key => $foto) {        				
+        				$Item[] = "		<img src='http:". str_replace('_#.', '_82.', $foto) ."' class='add_foto'>";        				
         			}
+        			$Item[] = "	</div>";
+        			$Item[] = "</div>";
         			
-        			$Item .= " </tr>\n";
-        			$Item .= " </table>\n";
-        			$Item .= " </td>\n";
-        			$Item .= "</tr>\n";
-        			$Item .= "</table>\n";
-        			            
         			$PlainMessage[] = $PlainItem;
-        			$HTMLMessage[] = showBlock($Item);
+        			$HTMLMessage[] = implode("\n", $Item);     			
         		}
         		
         		if($debug == 0) {
@@ -438,6 +414,7 @@ if($Checken) {
     		$PlainFooter .= $ScriptTitle.' '.$Version ."\n";
     		$PlainFooter .= "© ". (date("Y") != 2006 ? '2006-' : ''). date("Y") ." Matthijs Draijer";
     		
+    		/*
     		$FooterText = " <table width=100%>\n";
     		$FooterText .= " <tr>\n";
     		$FooterText .= "  <td align='left'><a href='". $ScriptRoot ."admin/edit.php?id=$term'>$strCheckCommand</a> | <a href='$URL'>$strCheckResults</a> | <a href='". $ScriptRoot ."admin/GoogleMaps.php?term=$term'>Google Maps</a> | <a href='". $ScriptRoot ."RSS/". $ZoekData['key'] .".xml'>RSS-feed</a></td>\n";
@@ -455,14 +432,17 @@ if($Checken) {
     		$HTMLFooter .= "</body>\n";
     		$HTMLFooter .= "</html>\n";
     		$HTMLFooter .= "\n\n<!--     Deze pagina is onderdeel van $ScriptTitle $Version gemaakt door Matthijs Draijer     -->";
+    		*/
     		   
       	$PlainMail  = $PlainHeader . implode("\n\n--- --- --- --- ---\n\n", $PlainMessage) . $PlainFooter;
 		    
+		    
+		    $HTMLFooter = "\n</body>\n";
+		    $HTMLFooter .= "</html>";
+		    
 		    $HTMLMail = $HTMLHeader;
-		    $HTMLMail .= "<tr>\n";		    
-		    $HTMLMail .= "	<td width='480px' valign='top' align='center'>". implode("\n<p>\n", $HTMLMessage) ."</td>\n";
-		    $HTMLMail .= "</tr>\n";
-		    $HTMLMail .= $HTMLFooter;		    		    
+		    $HTMLMail .= implode("\n\n", $HTMLMessage);		    
+		    $HTMLMail .= $HTMLFooter;		
 		    
 		    if($debug == 0) {
 		    	if($teller_n != 0) {
